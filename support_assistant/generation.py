@@ -41,6 +41,8 @@ def generate_with_inference(
     documents: list[RetrievedDocument],
     model: str,
     base_url: str,
+    max_tokens: int,
+    temperature: float,
 ) -> GenerationResult:
     api_key = os.environ.get("WANDB_API_KEY")
     if not api_key:
@@ -62,8 +64,8 @@ def generate_with_inference(
                 "content": f"Verified excerpts:\n{build_context(documents)}\n\nQuestion: {question}",
             },
         ],
-        temperature=0,
-        max_tokens=300,
+        temperature=temperature,
+        max_tokens=max_tokens,
     )
     usage = response.usage
     return GenerationResult(

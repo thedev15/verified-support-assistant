@@ -67,6 +67,8 @@ class SupportService:
                 documents=documents,
                 model=self.settings.inference_model,
                 base_url=self.settings.inference_base_url,
+                max_tokens=self.settings.inference_max_tokens,
+                temperature=self.settings.inference_temperature,
             )
         else:
             raise ValueError(f"Unsupported LLM_BACKEND: {self.settings.llm_backend}")

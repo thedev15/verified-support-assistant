@@ -1,13 +1,15 @@
 # Verified Support Assistant
 
+[![CI](https://github.com/thedev15/verified-support-assistant/actions/workflows/ci.yml/badge.svg)](https://github.com/thedev15/verified-support-assistant/actions/workflows/ci.yml)
+
 A portfolio-quality, citation-first e-commerce support assistant. It retrieves
 relevant policy excerpts, refuses requests it cannot verify or perform, and can
 generate answers with either a deterministic no-cost baseline or CoreWeave
 Forge Serverless Inference.
 
-> **Status:** supervised build in progress. The deterministic baseline is
-> implemented and tested. Live model evaluation, Weave dashboards, deployment,
-> and the final case study are the next milestones.
+> **Status:** the deterministic baseline, expanded benchmark, API, interface,
+> CI, and W&B experiment record are complete. A bounded live-model comparison,
+> Weave analysis, and deployment are the remaining milestones.
 
 ## Why this project exists
 
@@ -22,8 +24,9 @@ supported. This project treats groundedness as a product requirement:
 
 ## Baseline results
 
-Measured locally on `data/eval_set.json` (40 curated questions, including
-adversarial and account-action cases, 2026-10-02):
+Measured on `data/eval_set.json` (40 curated questions, including adversarial
+and account-action cases, 2026-10-02) and recorded in
+[W&B](https://wandb.ai/p-akinloye-cse2023016-obafemi-awolowo-university/verified-support-assistant/runs/iluo11jx):
 
 | Metric | Result |
 |---|---:|
@@ -32,9 +35,21 @@ adversarial and account-action cases, 2026-10-02):
 | Required-keyword coverage | 92% |
 | Core unit tests | 11/11 passing |
 
-These results validate the small synthetic benchmark only. They are not a
-production-quality claim; the next milestone expands the dataset and evaluates
-generated answers with live models.
+These results validate the synthetic benchmark only. They are not a
+production-quality claim; the next milestone evaluates generated answers with
+live models.
+
+## Experiment tracking
+
+The finished W&B baseline run includes the four summary metrics, all 40
+case-level outputs in a Table, the exact Git commit, configuration, and a code
+snapshot:
+
+- [baseline-tfidf-extractive-v1](https://wandb.ai/p-akinloye-cse2023016-obafemi-awolowo-university/verified-support-assistant/runs/iluo11jx)
+
+Future hosted-model evaluations use one run per model/configuration so latency,
+token use, grounded citation behavior, and answer quality can be compared
+without mixing conditions.
 
 ## Architecture
 
@@ -125,6 +140,24 @@ The benchmark intentionally separates:
   unsupported ones?
 - **keyword coverage:** did the deterministic answer preserve required facts?
 
+The hosted-model harness refuses to start if the planned number of model calls
+exceeds its hard cap. On the current 40-case set, only the 25 supported cases
+reach the model; guardrail and low-relevance refusals do not consume inference:
+
+```bash
+python scripts/run_live_eval.py \
+  --entity your-team \
+  --project verified-support-assistant \
+  --model meta-llama/Llama-3.1-8B-Instruct \
+  --max-paid-calls 25 \
+  --max-tokens 220 \
+  --weave
+```
+
+That limits each model condition to 25 requests and at most 5,500 generated
+tokens. The script logs case-level outputs, latency, actual token use, citation
+validity, refusal accuracy, retrieval accuracy, and keyword coverage to W&B.
+
 ## API example
 
 ```bash
@@ -167,6 +200,7 @@ tests/
 - [x] Web/API interface
 - [x] Unit and deterministic evaluation tests
 - [x] Larger adversarial evaluation set and enforced metric gates
+- [x] Reproducible W&B baseline run with case-level evaluation table
 - [ ] Bounded comparison of two hosted models/configurations
 - [ ] Weave traces and W&B evaluation report
 - [ ] Deployment and recorded demo

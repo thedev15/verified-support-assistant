@@ -17,6 +17,8 @@ class Settings:
     inference_base_url: str = os.getenv(
         "INFERENCE_BASE_URL", "https://api.inference.wandb.ai/v1"
     )
+    inference_max_tokens: int = int(os.getenv("INFERENCE_MAX_TOKENS", "220"))
+    inference_temperature: float = float(os.getenv("INFERENCE_TEMPERATURE", "0"))
     enable_weave: bool = os.getenv("ENABLE_WEAVE", "false").lower() == "true"
     weave_project: str = os.getenv("WEAVE_PROJECT", "")
 
