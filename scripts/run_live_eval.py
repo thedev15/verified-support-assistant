@@ -104,6 +104,7 @@ def main() -> None:
         "latency_seconds",
         "prompt_tokens",
         "completion_tokens",
+        "finish_reason",
         "retrieval_correct",
         "refusal_correct",
         "citation_valid",
@@ -119,6 +120,7 @@ def main() -> None:
         "errors": 0,
         "prompt_tokens": 0,
         "completion_tokens": 0,
+        "truncated": 0,
     }
     keyword_scores: list[float] = []
     latencies: list[float] = []
@@ -146,7 +148,7 @@ def main() -> None:
                 table.add_data(
                     example["question"], example["answerable"],
                     example.get("expected_document_id"), "", None, "", "",
-                    time.perf_counter() - started, None, None, False, False,
+                    time.perf_counter() - started, None, None, None, False, False,
                     False, None, error,
                 )
                 lowered = error.lower()
@@ -173,6 +175,7 @@ def main() -> None:
             counters["refusal"] += int(refusal_correct)
             counters["prompt_tokens"] += response.prompt_tokens or 0
             counters["completion_tokens"] += response.completion_tokens or 0
+            counters["truncated"] += int(response.finish_reason == "length")
 
             keywords = [word.lower() for word in example.get("required_keywords", [])]
             keyword_coverage = None
@@ -184,7 +187,7 @@ def main() -> None:
                 example["question"], example["answerable"], expected_id,
                 response.answer, response.refused, ", ".join(response_ids),
                 ", ".join(answer_ids), latency, response.prompt_tokens,
-                response.completion_tokens, retrieval_correct, refusal_correct,
+                response.completion_tokens, response.finish_reason, retrieval_correct, refusal_correct,
                 citation_valid, keyword_coverage, error,
             )
             run.log({"progress/completed_examples": index + 1})
@@ -204,6 +207,7 @@ def main() -> None:
             "eval/keyword_coverage": statistics.mean(keyword_scores) if keyword_scores else 0,
             "usage/prompt_tokens": counters["prompt_tokens"],
             "usage/completion_tokens": counters["completion_tokens"],
+            "eval/truncated_responses": counters["truncated"],
             "latency/mean_seconds": statistics.mean(latencies) if latencies else 0,
             "latency/p95_seconds": percentile_95(latencies),
         }

@@ -8,8 +8,8 @@ generate answers with either a deterministic no-cost baseline or CoreWeave
 Forge Serverless Inference.
 
 > **Status:** the deterministic baseline, expanded benchmark, API, interface,
-> CI, and W&B experiment record are complete. A bounded live-model comparison,
-> Weave analysis, and deployment are the remaining milestones.
+> CI, bounded hosted-model comparison, Weave traces, and W&B report are
+> complete. Deployment is the remaining milestone.
 
 ## Why this project exists
 
@@ -46,10 +46,31 @@ case-level outputs in a Table, the exact Git commit, configuration, and a code
 snapshot:
 
 - [baseline-tfidf-extractive-v1](https://wandb.ai/p-akinloye-cse2023016-obafemi-awolowo-university/verified-support-assistant/runs/iluo11jx)
+- [live-eval-meta-llama-llama-3-1-8b-instruct](https://wandb.ai/p-akinloye-cse2023016-obafemi-awolowo-university/verified-support-assistant/runs/fcjje8yi)
+- [live-eval-ibm-granite-granite-4-2-8b](https://wandb.ai/p-akinloye-cse2023016-obafemi-awolowo-university/verified-support-assistant/runs/1uck3atj)
 
 Future hosted-model evaluations use one run per model/configuration so latency,
 token use, grounded citation behavior, and answer quality can be compared
 without mixing conditions.
+
+## Hosted-model results
+
+The controlled comparison used 25 model requests per condition, temperature 0,
+and a 220-token completion cap. See the live
+[W&B evaluation report](https://wandb.ai/p-akinloye-cse2023016-obafemi-awolowo-university/verified-support-assistant/reports/Verified-Support-Assistant-Model-Evaluation--VmlldzoxODA0MzI5OQ)
+and the repository's [detailed case study](reports/model_comparison.md).
+
+| Condition | Refusal | Citation validity | Keyword coverage | Mean latency | Completion tokens |
+|---|---:|---:|---:|---:|---:|
+| Extractive baseline | **100%** | n/a | **92%** | n/a | 0 |
+| Llama 3.1 8B | 97.5% | **91.7%** | 75% | **0.172 s** | **598** |
+| Granite 4.2 8B | **100%** | 28% | 26% | 1.671 s | 4,917 |
+
+**Decision:** retain extractive mode as the safe default and use Llama 3.1 8B
+when generated answers are needed. Granite reached the completion limit on
+16/25 calls and produced 15 blank visible answers because internal reasoning
+consumed the 220-token budget. The API now converts blank generations to safe
+refusals and exposes `finish_reason` for observability.
 
 ## Architecture
 
@@ -201,8 +222,8 @@ tests/
 - [x] Unit and deterministic evaluation tests
 - [x] Larger adversarial evaluation set and enforced metric gates
 - [x] Reproducible W&B baseline run with case-level evaluation table
-- [ ] Bounded comparison of two hosted models/configurations
-- [ ] Weave traces and W&B evaluation report
+- [x] Bounded comparison of two hosted models/configurations
+- [x] Weave traces and W&B evaluation report
 - [ ] Deployment and recorded demo
 
 ## License

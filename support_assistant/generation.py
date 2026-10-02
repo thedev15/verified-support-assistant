@@ -21,6 +21,7 @@ Never claim to have accessed an order, account, payment, or shipment.
 class GenerationResult:
     text: str
     model: str | None = None
+    finish_reason: str | None = None
     prompt_tokens: int | None = None
     completion_tokens: int | None = None
 
@@ -76,6 +77,7 @@ def generate_with_inference(
     return GenerationResult(
         text=response.choices[0].message.content or "",
         model=response.model,
+        finish_reason=response.choices[0].finish_reason,
         prompt_tokens=usage.prompt_tokens if usage else None,
         completion_tokens=usage.completion_tokens if usage else None,
     )

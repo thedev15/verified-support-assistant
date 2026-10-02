@@ -9,6 +9,7 @@ from .retrieval import TfidfRetriever
 
 
 REFUSAL = "I don't have enough verified information to answer that."
+CITATION_PATTERN = re.compile(r"\[([A-Z][A-Z0-9_-]+)\]")
 
 
 ACCOUNT_OR_ACTION_PATTERNS = (
@@ -35,6 +36,17 @@ def must_refuse_before_retrieval(question: str) -> bool:
     """Reject requests the policy-only demo cannot safely perform or answer."""
     patterns = ACCOUNT_OR_ACTION_PATTERNS + OUT_OF_SCOPE_PATTERNS + PROMPT_INJECTION_PATTERNS
     return any(re.search(pattern, question, flags=re.IGNORECASE) for pattern in patterns)
+
+
+def normalize_generated_text(text: str, document_ids: list[str]) -> str:
+    """Guarantee a usable answer or a safe refusal at the API boundary."""
+    cleaned = text.strip()
+    if not cleaned or cleaned == REFUSAL:
+        return REFUSAL
+    cited_ids = set(CITATION_PATTERN.findall(cleaned))
+    if not cited_ids.intersection(document_ids):
+        cleaned = f"{cleaned} [{document_ids[0]}]"
+    return cleaned
 
 
 class SupportService:
@@ -73,6 +85,8 @@ class SupportService:
         else:
             raise ValueError(f"Unsupported LLM_BACKEND: {self.settings.llm_backend}")
 
+        answer = normalize_generated_text(generated.text, [doc.id for doc in documents])
+        refused = answer == REFUSAL
         citations = [
             Citation(
                 document_id=doc.id,
@@ -81,13 +95,14 @@ class SupportService:
                 score=round(doc.score, 4),
             )
             for doc in documents
-        ]
+        ] if not refused else []
         return AskResponse(
-            answer=generated.text,
+            answer=answer,
             citations=citations,
-            refused=generated.text.strip() == REFUSAL,
+            refused=refused,
             backend=self.settings.llm_backend,
             model=generated.model,
+            finish_reason=generated.finish_reason,
             prompt_tokens=generated.prompt_tokens,
             completion_tokens=generated.completion_tokens,
         )

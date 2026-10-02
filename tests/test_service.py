@@ -1,7 +1,9 @@
 from pathlib import Path
 import unittest
+from unittest.mock import patch
 
 from support_assistant.config import Settings
+from support_assistant.generation import GenerationResult
 from support_assistant.knowledge import load_documents
 from support_assistant.retrieval import TfidfRetriever
 from support_assistant.service import REFUSAL, SupportService
@@ -50,6 +52,32 @@ class ServiceTests(unittest.TestCase):
     def test_full_card_number_request_is_refused(self) -> None:
         response = self.service.answer("Give me the full card number used for payment.")
         self.assertTrue(response.refused)
+
+    def test_blank_model_output_becomes_safe_refusal(self) -> None:
+        documents = load_documents(Path("data/knowledge_base.json"))
+        settings = Settings(
+            knowledge_path=Path("data/knowledge_base.json"), llm_backend="inference"
+        )
+        service = SupportService(TfidfRetriever(documents), settings)
+        result = GenerationResult(text="", model="test-model", finish_reason="length")
+        with patch("support_assistant.service.generate_with_inference", return_value=result):
+            response = service.answer("How long does a card refund take?")
+        self.assertTrue(response.refused)
+        self.assertEqual(response.answer, REFUSAL)
+        self.assertEqual(response.citations, [])
+        self.assertEqual(response.finish_reason, "length")
+
+    def test_model_answer_without_valid_citation_gets_retrieval_citation(self) -> None:
+        documents = load_documents(Path("data/knowledge_base.json"))
+        settings = Settings(
+            knowledge_path=Path("data/knowledge_base.json"), llm_backend="inference"
+        )
+        service = SupportService(TfidfRetriever(documents), settings)
+        result = GenerationResult(text="Card refunds take 5 to 10 business days.")
+        with patch("support_assistant.service.generate_with_inference", return_value=result):
+            response = service.answer("How long does a card refund take?")
+        self.assertFalse(response.refused)
+        self.assertIn("[REF-001]", response.answer)
 
 
 if __name__ == "__main__":

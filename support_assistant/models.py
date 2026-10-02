@@ -31,5 +31,6 @@ class AskResponse(BaseModel):
     refused: bool
     backend: str
     model: str | None = None
+    finish_reason: str | None = None
     prompt_tokens: int | None = None
     completion_tokens: int | None = None
