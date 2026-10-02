@@ -7,9 +7,9 @@ relevant policy excerpts, refuses requests it cannot verify or perform, and can
 generate answers with either a deterministic no-cost baseline or CoreWeave
 Forge Serverless Inference.
 
-> **Status:** the deterministic baseline, expanded benchmark, API, interface,
-> CI, bounded hosted-model comparison, Weave traces, and W&B report are
-> complete. Deployment is the remaining milestone.
+> **Status:** the deterministic baseline, expanded benchmark, API, verified
+> interface, bounded hosted-model comparison, Weave traces, W&B report, and
+> reproducible Sandbox preview workflow are complete.
 
 ## Why this project exists
 
@@ -25,19 +25,43 @@ supported. This project treats groundedness as a product requirement:
 ## Baseline results
 
 Measured on `data/eval_set.json` (40 curated questions, including adversarial
-and account-action cases, 2026-10-02) and recorded in
-[W&B](https://wandb.ai/p-akinloye-cse2023016-obafemi-awolowo-university/verified-support-assistant/runs/iluo11jx):
+and account-action cases, 2026-10-02) with the current deterministic gate:
 
 | Metric | Result |
 |---|---:|
 | Retrieval accuracy (expected policy in top 3) | 100% |
 | Refusal accuracy | 100% |
-| Required-keyword coverage | 92% |
-| Core unit tests | 11/11 passing |
+| Required-keyword coverage | 100% |
+| Core unit tests | 20/20 passing |
 
 These results validate the synthetic benchmark only. They are not a
 production-quality claim; the next milestone evaluates generated answers with
 live models.
+
+The original tracked [W&B baseline](https://wandb.ai/p-akinloye-cse2023016-obafemi-awolowo-university/verified-support-assistant/runs/iluo11jx)
+recorded 92% keyword coverage. The browser evidence gate later exposed two
+top-policy errors hidden by top-3 retrieval; deterministic domain routing and
+regression tests corrected both in the current branch.
+
+## Live UI evidence
+
+[`docs/live-demo/live-demo-results.md`](docs/live-demo/live-demo-results.md)
+contains 40 browser screenshots produced by submitting every versioned
+benchmark question through the real page and `/api/ask` endpoint. Each capture
+shows the submitted question, verified answer or safe refusal, backend, and
+the exact policy citation used. The JSON manifest records complete API
+responses, screenshot hashes, dimensions, and pass/fail assertions.
+
+```bash
+python scripts/capture_live_demo.py --base-url http://localhost:8000
+```
+
+The capture fails unless refusal accuracy and cited-document accuracy are both
+100%, all 40 PNGs are present and unique, and the evidence ZIP passes its CRC
+check. The committed set was captured in a private, bounded CoreWeave Sandbox;
+[`sandbox-capture.json`](docs/live-demo/sandbox-capture.json) records its ID and
+hard expiry. This verifies the deployed runtime but is not a claim of durable
+or publicly available production deployment.
 
 ## Experiment tracking
 
@@ -226,8 +250,8 @@ tests/
 
 ## Safety and limitations
 
-- The corpus and URLs are synthetic and marked with the reserved `.invalid`
-  domain. This assistant is not connected to a real retailer.
+- The corpus and policy content are synthetic. Policy citations resolve to
+  pages served by this demo; the assistant is not connected to a real retailer.
 - It cannot inspect accounts, track live orders, take payment, or place orders.
 - Regex guardrails and TF-IDF retrieval are transparent baselines, not complete
   defenses against adversarial prompts.

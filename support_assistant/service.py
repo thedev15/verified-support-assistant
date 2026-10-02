@@ -4,7 +4,7 @@ import re
 
 from .config import Settings
 from .generation import generate_extractive, generate_with_inference
-from .models import AskResponse, Citation
+from .models import AskResponse, Citation, RetrievedDocument
 from .retrieval import TfidfRetriever
 
 
@@ -31,11 +31,33 @@ PROMPT_INJECTION_PATTERNS = (
     r"\b(system prompt|developer message|jailbreak)\b",
 )
 
+POLICY_DOMAIN_HINTS = (
+    (r"\b(change|edit|correct|update)\b.*\b(shipping|delivery)\s+address\b", "ORD-001"),
+    (r"\b(refund|refundable|reimburse)\b.*\b(express|shipping|delivery)\s+(fee|charge|cost)\b", "REF-001"),
+)
+
 
 def must_refuse_before_retrieval(question: str) -> bool:
     """Reject requests the policy-only demo cannot safely perform or answer."""
     patterns = ACCOUNT_OR_ACTION_PATTERNS + OUT_OF_SCOPE_PATTERNS + PROMPT_INJECTION_PATTERNS
     return any(re.search(pattern, question, flags=re.IGNORECASE) for pattern in patterns)
+
+
+def prioritize_policy_domain(
+    question: str, documents: list[RetrievedDocument]
+) -> list[RetrievedDocument]:
+    """Move an explicitly named policy domain ahead of lexical near-matches."""
+    preferred_id = next(
+        (
+            document_id
+            for pattern, document_id in POLICY_DOMAIN_HINTS
+            if re.search(pattern, question, flags=re.IGNORECASE)
+        ),
+        None,
+    )
+    if preferred_id is None:
+        return documents
+    return sorted(documents, key=lambda document: document.id != preferred_id)
 
 
 def normalize_generated_text(text: str, document_ids: list[str]) -> str:
@@ -70,6 +92,7 @@ class SupportService:
                 refused=True,
                 backend=self.settings.llm_backend,
             )
+        documents = prioritize_policy_domain(question, documents)
 
         if self.settings.llm_backend == "extractive":
             generated = generate_extractive(documents)
@@ -87,6 +110,7 @@ class SupportService:
 
         answer = normalize_generated_text(generated.text, [doc.id for doc in documents])
         refused = answer == REFUSAL
+        cited_ids = set(CITATION_PATTERN.findall(answer))
         citations = [
             Citation(
                 document_id=doc.id,
@@ -95,6 +119,7 @@ class SupportService:
                 score=round(doc.score, 4),
             )
             for doc in documents
+            if doc.id in cited_ids
         ] if not refused else []
         return AskResponse(
             answer=answer,

@@ -20,7 +20,20 @@ class ServiceTests(unittest.TestCase):
         response = self.service.answer("How long does a refund take?")
         self.assertFalse(response.refused)
         self.assertEqual(response.citations[0].document_id, "REF-001")
+        self.assertEqual(len(response.citations), 1)
         self.assertIn("[REF-001]", response.answer)
+
+    def test_shipping_address_routes_to_order_policy(self) -> None:
+        response = self.service.answer("Can I change my shipping address after checkout?")
+        self.assertFalse(response.refused)
+        self.assertEqual([item.document_id for item in response.citations], ["ORD-001"])
+        self.assertIn("shipping addresses", response.answer.lower())
+
+    def test_express_fee_refund_routes_to_refund_policy(self) -> None:
+        response = self.service.answer("Will you refund the express shipping fee?")
+        self.assertFalse(response.refused)
+        self.assertEqual([item.document_id for item in response.citations], ["REF-001"])
+        self.assertIn("not refundable", response.answer)
 
     def test_unknown_question_is_refused(self) -> None:
         response = self.service.answer("Who won the football championship?")

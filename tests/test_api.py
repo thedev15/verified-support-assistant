@@ -27,6 +27,18 @@ class ApiTests(unittest.TestCase):
         payload = response.json()
         self.assertFalse(payload["refused"])
         self.assertEqual(payload["citations"][0]["document_id"], "REF-001")
+        self.assertEqual(len(payload["citations"]), 1)
+        self.assertEqual(payload["citations"][0]["source"], "/policies/REF-001")
+
+    def test_citation_opens_versioned_policy(self) -> None:
+        response = self.client.get("/policies/REF-001")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("Refund processing times", response.text)
+        self.assertIn("VERSIONED SUPPORT POLICY", response.text)
+
+    def test_unknown_policy_returns_404(self) -> None:
+        response = self.client.get("/policies/UNKNOWN")
+        self.assertEqual(response.status_code, 404)
 
     def test_request_validation(self) -> None:
         response = self.client.post("/api/ask", json={"question": "x"})
