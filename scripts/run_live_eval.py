@@ -122,6 +122,8 @@ def main() -> None:
     }
     keyword_scores: list[float] = []
     latencies: list[float] = []
+    consecutive_errors = 0
+    attempted_examples = 0
 
     with wandb.init(
         entity=args.entity,
@@ -132,12 +134,14 @@ def main() -> None:
         config=config,
     ) as run:
         for index, example in enumerate(examples):
+            attempted_examples += 1
             started = time.perf_counter()
             error = ""
             try:
                 response = answer(example["question"])
             except Exception as exc:  # Preserve the partial experiment for diagnosis.
                 counters["errors"] += 1
+                consecutive_errors += 1
                 error = f"{type(exc).__name__}: {exc}"
                 table.add_data(
                     example["question"], example["answerable"],
@@ -145,8 +149,14 @@ def main() -> None:
                     time.perf_counter() - started, None, None, False, False,
                     False, None, error,
                 )
+                lowered = error.lower()
+                if any(term in lowered for term in ("billing", "credit", "quota", "401", "403")):
+                    break
+                if consecutive_errors >= 2:
+                    break
                 continue
 
+            consecutive_errors = 0
             latency = time.perf_counter() - started
             latencies.append(latency)
             response_ids = [citation.document_id for citation in response.citations]
@@ -179,9 +189,11 @@ def main() -> None:
             )
             run.log({"progress/completed_examples": index + 1})
 
-        completed = len(examples) - counters["errors"]
+        completed = attempted_examples - counters["errors"]
         metrics = {
-            "eval/examples": len(examples),
+            "eval/examples": attempted_examples,
+            "eval/examples_planned": len(examples),
+            "eval/aborted": int(attempted_examples < len(examples)),
             "eval/errors": counters["errors"],
             "eval/retrieval_accuracy": counters["retrieval"] / completed if completed else 0,
             "eval/refusal_accuracy": counters["refusal"] / completed if completed else 0,

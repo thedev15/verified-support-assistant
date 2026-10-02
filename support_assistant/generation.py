@@ -50,7 +50,12 @@ def generate_with_inference(
 
     entity = os.environ.get("WANDB_ENTITY")
     project = os.environ.get("WANDB_PROJECT")
-    client_args: dict[str, str] = {"base_url": base_url, "api_key": api_key}
+    client_args: dict[str, object] = {
+        "base_url": base_url,
+        "api_key": api_key,
+        "max_retries": 0,
+        "timeout": 60.0,
+    }
     if entity and project:
         client_args["project"] = f"{entity}/{project}"
     client = OpenAI(**client_args)
