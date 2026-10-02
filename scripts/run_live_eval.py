@@ -15,10 +15,10 @@ import wandb
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from support_assistant.config import get_settings
-from support_assistant.knowledge import load_documents
-from support_assistant.retrieval import TfidfRetriever
-from support_assistant.service import SupportService
+from support_assistant.config import get_settings  # noqa: E402
+from support_assistant.knowledge import load_documents  # noqa: E402
+from support_assistant.retrieval import TfidfRetriever  # noqa: E402
+from support_assistant.service import SupportService  # noqa: E402
 
 CITATION_PATTERN = re.compile(r"\[([A-Z][A-Z0-9_-]+)\]")
 
