@@ -15,17 +15,25 @@ ACCOUNT_OR_ACTION_PATTERNS = (
     r"\b(current location|where is my order|track my order|order\s*#?\s*\d+)\b",
     r"\b(what is|tell me|show me|recover)\s+(my\s+)?(account\s+)?(password|one-time code)\b",
     r"\b(place|submit|purchase|buy)\b.*\b(order|item)\b",
+    r"\b(buy|purchase|submit|place|cancel)\b.*\b(for me|my account|order\s*#?\s*\d+)\b",
+    r"\b(full card number|card security code|another customer'?s|other customer'?s)\b",
 )
 
 OUT_OF_SCOPE_PATTERNS = (
     r"\b(stock|share)\s+price\b",
     r"\b(football|basketball|baseball|championship)\b",
+    r"\b(weather|political candidate|medical device|medical condition|malware)\b",
+)
+
+PROMPT_INJECTION_PATTERNS = (
+    r"\b(ignore|override|bypass)\b.*\b(instructions|policies|rules|system|prompt)\b",
+    r"\b(system prompt|developer message|jailbreak)\b",
 )
 
 
 def must_refuse_before_retrieval(question: str) -> bool:
     """Reject requests the policy-only demo cannot safely perform or answer."""
-    patterns = ACCOUNT_OR_ACTION_PATTERNS + OUT_OF_SCOPE_PATTERNS
+    patterns = ACCOUNT_OR_ACTION_PATTERNS + OUT_OF_SCOPE_PATTERNS + PROMPT_INJECTION_PATTERNS
     return any(re.search(pattern, question, flags=re.IGNORECASE) for pattern in patterns)
 
 

@@ -6,6 +6,20 @@ from sklearn.metrics.pairwise import cosine_similarity
 from .models import Document, RetrievedDocument
 
 
+def normalize_for_search(text: str) -> str:
+    """Normalize a few operational-support paraphrases without an opaque model."""
+    normalized = text.lower()
+    replacements = {
+        "one-day": "24 hours",
+        "one day": "24 hours",
+        "scanned": "scan",
+        "scanning": "scan",
+    }
+    for source, target in replacements.items():
+        normalized = normalized.replace(source, target)
+    return normalized
+
+
 class TfidfRetriever:
     """Small, inspectable retrieval baseline suitable for a portfolio demo."""
 
@@ -17,6 +31,7 @@ class TfidfRetriever:
             stop_words="english",
             ngram_range=(1, 2),
             sublinear_tf=True,
+            preprocessor=normalize_for_search,
         )
         self.matrix = self.vectorizer.fit_transform(corpus)
 

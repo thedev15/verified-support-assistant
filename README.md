@@ -22,14 +22,15 @@ supported. This project treats groundedness as a product requirement:
 
 ## Baseline results
 
-Measured locally on `data/eval_set.json` (20 curated questions, 2026-10-02):
+Measured locally on `data/eval_set.json` (40 curated questions, including
+adversarial and account-action cases, 2026-10-02):
 
 | Metric | Result |
 |---|---:|
 | Retrieval accuracy (expected policy in top 3) | 100% |
 | Refusal accuracy | 100% |
-| Required-keyword coverage | 92.86% |
-| Unit tests | 8/8 passing |
+| Required-keyword coverage | 92% |
+| Core unit tests | 11/11 passing |
 
 These results validate the small synthetic benchmark only. They are not a
 production-quality claim; the next milestone expands the dataset and evaluates
@@ -165,7 +166,7 @@ tests/
 - [x] Retrieval and refusal baseline
 - [x] Web/API interface
 - [x] Unit and deterministic evaluation tests
-- [ ] Larger adversarial evaluation set
+- [x] Larger adversarial evaluation set and enforced metric gates
 - [ ] Bounded comparison of two hosted models/configurations
 - [ ] Weave traces and W&B evaluation report
 - [ ] Deployment and recorded demo

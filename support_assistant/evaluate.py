@@ -43,8 +43,27 @@ def evaluate(dataset_path: Path) -> dict[str, float | int]:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--dataset", type=Path, default=Path("data/eval_set.json"))
+    parser.add_argument("--output", type=Path)
+    parser.add_argument("--min-retrieval", type=float, default=0.95)
+    parser.add_argument("--min-refusal", type=float, default=0.95)
+    parser.add_argument("--min-keyword-coverage", type=float, default=0.85)
     args = parser.parse_args()
-    print(json.dumps(evaluate(args.dataset), indent=2, sort_keys=True))
+    metrics = evaluate(args.dataset)
+    rendered = json.dumps(metrics, indent=2, sort_keys=True)
+    print(rendered)
+    if args.output:
+        args.output.parent.mkdir(parents=True, exist_ok=True)
+        args.output.write_text(rendered + "\n", encoding="utf-8")
+
+    failures = []
+    if metrics["retrieval_accuracy"] < args.min_retrieval:
+        failures.append("retrieval_accuracy")
+    if metrics["refusal_accuracy"] < args.min_refusal:
+        failures.append("refusal_accuracy")
+    if metrics["keyword_coverage"] < args.min_keyword_coverage:
+        failures.append("keyword_coverage")
+    if failures:
+        raise SystemExit(f"Evaluation gate failed: {', '.join(failures)}")
 
 
 if __name__ == "__main__":
