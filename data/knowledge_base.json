@@ -1,0 +1,77 @@
+{
+  "version": "2026-10-02",
+  "documents": [
+    {
+      "id": "SHIP-001",
+      "title": "Standard and express shipping",
+      "source": "https://example.invalid/policies/shipping",
+      "text": "Standard shipping normally arrives in 5 to 7 business days after dispatch. Express shipping normally arrives in 2 to 3 business days after dispatch. Processing before dispatch can take 1 business day. Delivery estimates exclude weekends and public holidays."
+    },
+    {
+      "id": "SHIP-002",
+      "title": "Tracking and delayed shipments",
+      "source": "https://example.invalid/help/tracking",
+      "text": "A tracking link is emailed after an order is dispatched. Tracking can take up to 24 hours to show the first carrier scan. If tracking has not updated for 5 calendar days, the customer should contact support so a carrier investigation can be opened."
+    },
+    {
+      "id": "RET-001",
+      "title": "Return eligibility",
+      "source": "https://example.invalid/policies/returns",
+      "text": "Most unused items can be returned within 30 calendar days of delivery. Items must be in original condition with tags and packaging. Final-sale items, opened personal-care products, and personalized products are not eligible for return unless they arrived damaged or defective."
+    },
+    {
+      "id": "RET-002",
+      "title": "Starting and shipping a return",
+      "source": "https://example.invalid/help/start-a-return",
+      "text": "Start a return from the order-history page to receive a return authorization and label. The package must be handed to the carrier within 14 days after authorization. A return sent without authorization may be delayed or rejected."
+    },
+    {
+      "id": "REF-001",
+      "title": "Refund processing times",
+      "source": "https://example.invalid/policies/refunds",
+      "text": "After the warehouse accepts a return, the refund is issued to the original payment method within 3 business days. Banks and card issuers can take an additional 5 to 10 business days to post the credit. Original express-shipping fees are not refundable."
+    },
+    {
+      "id": "ORD-001",
+      "title": "Changing or cancelling an order",
+      "source": "https://example.invalid/help/order-changes",
+      "text": "An order can be cancelled from order history only while its status is Processing. Shipping addresses and item selections cannot be edited after checkout. If cancellation is unavailable, the customer can request a return after delivery, subject to the return policy."
+    },
+    {
+      "id": "DAM-001",
+      "title": "Damaged, defective, or incorrect items",
+      "source": "https://example.invalid/help/damaged-items",
+      "text": "Report a damaged, defective, or incorrect item within 7 calendar days of delivery. Include the order number and clear photographs of the item, packaging, and shipping label. Support may offer a replacement or refund after reviewing the evidence."
+    },
+    {
+      "id": "WAR-001",
+      "title": "Limited product warranty",
+      "source": "https://example.invalid/policies/warranty",
+      "text": "Electronics carry a one-year limited warranty from the delivery date for manufacturing defects. The warranty does not cover accidental damage, liquid damage, misuse, unauthorized repair, normal wear, or cosmetic damage. Proof of purchase is required."
+    },
+    {
+      "id": "PAY-001",
+      "title": "Payment authorization and duplicate charges",
+      "source": "https://example.invalid/help/payments",
+      "text": "A pending payment authorization is not a completed charge and normally disappears within 3 to 7 business days if an order fails. For two completed charges with the same order number, contact support with the order number and payment dates. Never send a full card number or security code."
+    },
+    {
+      "id": "SEC-001",
+      "title": "Account security",
+      "source": "https://example.invalid/help/account-security",
+      "text": "Support will never request a password, one-time code, full payment-card number, or card security code. A customer who suspects account compromise should reset the password, sign out other sessions, review recent orders, and contact support."
+    },
+    {
+      "id": "INT-001",
+      "title": "International orders and duties",
+      "source": "https://example.invalid/policies/international",
+      "text": "International delivery estimates vary by destination and are shown at checkout. Import duties and taxes are the recipient's responsibility unless checkout explicitly states they are prepaid. Customs delays are outside the standard delivery estimate."
+    },
+    {
+      "id": "GFT-001",
+      "title": "Gift cards",
+      "source": "https://example.invalid/policies/gift-cards",
+      "text": "Gift cards do not expire and cannot be redeemed for cash except where required by law. Lost gift cards can be replaced only when the purchaser provides proof of purchase and the unused card number can be verified."
+    }
+  ]
+}

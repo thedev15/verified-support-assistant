@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "verified-support-assistant"
+version = "0.1.0"
+description = "A citation-first e-commerce support assistant with retrieval and evaluation."
+requires-python = ">=3.11"
+dependencies = [
+  "fastapi>=0.115,<1",
+  "uvicorn[standard]>=0.30,<1",
+  "openai>=1.50,<3",
+  "pydantic>=2.8,<3",
+  "scikit-learn>=1.5,<2",
+  "wandb>=0.21,<1",
+  "weave>=0.52,<1",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8,<10", "httpx>=0.27,<1", "ruff>=0.8,<1"]
+
+[tool.setuptools.packages.find]
+include = ["support_assistant*"]
+
+[tool.setuptools.package-data]
+support_assistant = ["static/*.html"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F"]
