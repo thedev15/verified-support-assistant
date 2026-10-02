@@ -4,6 +4,8 @@ __pycache__/
 .ruff_cache/
 .venv/
 .env
+wandb/
+reports/final_audit_metrics.json
 dist/
 build/
 *.egg-info/
