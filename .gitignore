@@ -4,6 +4,8 @@ __pycache__/
 .ruff_cache/
 .venv/
 .env
+.deployment.json
+evidence/.deployment.json
 wandb/
 reports/final_audit_metrics.json
 dist/

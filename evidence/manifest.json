@@ -1,0 +1,445 @@
+{
+  "app": "Atlas de Recuerdos — Photo Map Remix",
+  "source_url": "https://8000-b7085315-ea70-4250-88a7-2d7cd6c0c082.c2d60ed8.ep1.cwsandbox.com",
+  "captured_at": "2026-10-02T07:09:13.025734+00:00",
+  "capture_count": 40,
+  "states_per_viewport": 20,
+  "captures": [
+    {
+      "file": "screenshots/desktop-01-overview.png",
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 900,
+      "state": "overview",
+      "query": {},
+      "bytes": 696384
+    },
+    {
+      "file": "screenshots/desktop-02-filter-viajes.png",
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 900,
+      "state": "filter-viajes",
+      "query": {
+        "filter": "viajes"
+      },
+      "bytes": 682849
+    },
+    {
+      "file": "screenshots/desktop-03-filter-sabores.png",
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 900,
+      "state": "filter-sabores",
+      "query": {
+        "filter": "sabores"
+      },
+      "bytes": 683663
+    },
+    {
+      "file": "screenshots/desktop-04-filter-celebraciones.png",
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 900,
+      "state": "filter-celebraciones",
+      "query": {
+        "filter": "celebraciones"
+      },
+      "bytes": 677700
+    },
+    {
+      "file": "screenshots/desktop-05-search-tokio.png",
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 900,
+      "state": "search-tokio",
+      "query": {
+        "q": "tokio"
+      },
+      "bytes": 671587
+    },
+    {
+      "file": "screenshots/desktop-06-search-fiesta.png",
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 900,
+      "state": "search-fiesta",
+      "query": {
+        "q": "fiesta"
+      },
+      "bytes": 676336
+    },
+    {
+      "file": "screenshots/desktop-07-memory-barcelona.png",
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 900,
+      "state": "memory-barcelona",
+      "query": {
+        "memory": "barcelona"
+      },
+      "bytes": 626848
+    },
+    {
+      "file": "screenshots/desktop-08-memory-paris.png",
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 900,
+      "state": "memory-paris",
+      "query": {
+        "memory": "paris"
+      },
+      "bytes": 626287
+    },
+    {
+      "file": "screenshots/desktop-09-memory-tokio.png",
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 900,
+      "state": "memory-tokio",
+      "query": {
+        "memory": "tokio"
+      },
+      "bytes": 625517
+    },
+    {
+      "file": "screenshots/desktop-10-memory-oaxaca.png",
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 900,
+      "state": "memory-oaxaca",
+      "query": {
+        "memory": "oaxaca"
+      },
+      "bytes": 628208
+    },
+    {
+      "file": "screenshots/desktop-11-memory-buenos-aires.png",
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 900,
+      "state": "memory-buenos-aires",
+      "query": {
+        "memory": "buenos-aires"
+      },
+      "bytes": 628881
+    },
+    {
+      "file": "screenshots/desktop-12-memory-marrakech.png",
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 900,
+      "state": "memory-marrakech",
+      "query": {
+        "memory": "marrakech"
+      },
+      "bytes": 629183
+    },
+    {
+      "file": "screenshots/desktop-13-memory-nueva-york.png",
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 900,
+      "state": "memory-nueva-york",
+      "query": {
+        "memory": "nueva-york"
+      },
+      "bytes": 627223
+    },
+    {
+      "file": "screenshots/desktop-14-memory-lisboa.png",
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 900,
+      "state": "memory-lisboa",
+      "query": {
+        "memory": "lisboa"
+      },
+      "bytes": 628551
+    },
+    {
+      "file": "screenshots/desktop-15-memory-bangkok.png",
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 900,
+      "state": "memory-bangkok",
+      "query": {
+        "memory": "bangkok"
+      },
+      "bytes": 629380
+    },
+    {
+      "file": "screenshots/desktop-16-memory-sevilla.png",
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 900,
+      "state": "memory-sevilla",
+      "query": {
+        "memory": "sevilla"
+      },
+      "bytes": 630689
+    },
+    {
+      "file": "screenshots/desktop-17-memory-rio.png",
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 900,
+      "state": "memory-rio",
+      "query": {
+        "memory": "rio"
+      },
+      "bytes": 626134
+    },
+    {
+      "file": "screenshots/desktop-18-memory-patagonia.png",
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 900,
+      "state": "memory-patagonia",
+      "query": {
+        "memory": "patagonia"
+      },
+      "bytes": 630735
+    },
+    {
+      "file": "screenshots/desktop-19-memory-kioto.png",
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 900,
+      "state": "memory-kioto",
+      "query": {
+        "memory": "kioto"
+      },
+      "bytes": 633878
+    },
+    {
+      "file": "screenshots/desktop-20-memory-islandia.png",
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 900,
+      "state": "memory-islandia",
+      "query": {
+        "memory": "islandia"
+      },
+      "bytes": 631338
+    },
+    {
+      "file": "screenshots/mobile-01-overview.png",
+      "viewport": "mobile",
+      "width": 390,
+      "height": 844,
+      "state": "overview",
+      "query": {},
+      "bytes": 219721
+    },
+    {
+      "file": "screenshots/mobile-02-filter-viajes.png",
+      "viewport": "mobile",
+      "width": 390,
+      "height": 844,
+      "state": "filter-viajes",
+      "query": {
+        "filter": "viajes"
+      },
+      "bytes": 208018
+    },
+    {
+      "file": "screenshots/mobile-03-filter-sabores.png",
+      "viewport": "mobile",
+      "width": 390,
+      "height": 844,
+      "state": "filter-sabores",
+      "query": {
+        "filter": "sabores"
+      },
+      "bytes": 208513
+    },
+    {
+      "file": "screenshots/mobile-04-filter-celebraciones.png",
+      "viewport": "mobile",
+      "width": 390,
+      "height": 844,
+      "state": "filter-celebraciones",
+      "query": {
+        "filter": "celebraciones"
+      },
+      "bytes": 205748
+    },
+    {
+      "file": "screenshots/mobile-05-search-tokio.png",
+      "viewport": "mobile",
+      "width": 390,
+      "height": 844,
+      "state": "search-tokio",
+      "query": {
+        "q": "tokio"
+      },
+      "bytes": 196945
+    },
+    {
+      "file": "screenshots/mobile-06-search-fiesta.png",
+      "viewport": "mobile",
+      "width": 390,
+      "height": 844,
+      "state": "search-fiesta",
+      "query": {
+        "q": "fiesta"
+      },
+      "bytes": 202835
+    },
+    {
+      "file": "screenshots/mobile-07-memory-barcelona.png",
+      "viewport": "mobile",
+      "width": 390,
+      "height": 844,
+      "state": "memory-barcelona",
+      "query": {
+        "memory": "barcelona"
+      },
+      "bytes": 175819
+    },
+    {
+      "file": "screenshots/mobile-08-memory-paris.png",
+      "viewport": "mobile",
+      "width": 390,
+      "height": 844,
+      "state": "memory-paris",
+      "query": {
+        "memory": "paris"
+      },
+      "bytes": 175572
+    },
+    {
+      "file": "screenshots/mobile-09-memory-tokio.png",
+      "viewport": "mobile",
+      "width": 390,
+      "height": 844,
+      "state": "memory-tokio",
+      "query": {
+        "memory": "tokio"
+      },
+      "bytes": 174728
+    },
+    {
+      "file": "screenshots/mobile-10-memory-oaxaca.png",
+      "viewport": "mobile",
+      "width": 390,
+      "height": 844,
+      "state": "memory-oaxaca",
+      "query": {
+        "memory": "oaxaca"
+      },
+      "bytes": 176690
+    },
+    {
+      "file": "screenshots/mobile-11-memory-buenos-aires.png",
+      "viewport": "mobile",
+      "width": 390,
+      "height": 844,
+      "state": "memory-buenos-aires",
+      "query": {
+        "memory": "buenos-aires"
+      },
+      "bytes": 174963
+    },
+    {
+      "file": "screenshots/mobile-12-memory-marrakech.png",
+      "viewport": "mobile",
+      "width": 390,
+      "height": 844,
+      "state": "memory-marrakech",
+      "query": {
+        "memory": "marrakech"
+      },
+      "bytes": 177674
+    },
+    {
+      "file": "screenshots/mobile-13-memory-nueva-york.png",
+      "viewport": "mobile",
+      "width": 390,
+      "height": 844,
+      "state": "memory-nueva-york",
+      "query": {
+        "memory": "nueva-york"
+      },
+      "bytes": 174720
+    },
+    {
+      "file": "screenshots/mobile-14-memory-lisboa.png",
+      "viewport": "mobile",
+      "width": 390,
+      "height": 844,
+      "state": "memory-lisboa",
+      "query": {
+        "memory": "lisboa"
+      },
+      "bytes": 175841
+    },
+    {
+      "file": "screenshots/mobile-15-memory-bangkok.png",
+      "viewport": "mobile",
+      "width": 390,
+      "height": 844,
+      "state": "memory-bangkok",
+      "query": {
+        "memory": "bangkok"
+      },
+      "bytes": 177259
+    },
+    {
+      "file": "screenshots/mobile-16-memory-sevilla.png",
+      "viewport": "mobile",
+      "width": 390,
+      "height": 844,
+      "state": "memory-sevilla",
+      "query": {
+        "memory": "sevilla"
+      },
+      "bytes": 177868
+    },
+    {
+      "file": "screenshots/mobile-17-memory-rio.png",
+      "viewport": "mobile",
+      "width": 390,
+      "height": 844,
+      "state": "memory-rio",
+      "query": {
+        "memory": "rio"
+      },
+      "bytes": 176443
+    },
+    {
+      "file": "screenshots/mobile-18-memory-patagonia.png",
+      "viewport": "mobile",
+      "width": 390,
+      "height": 844,
+      "state": "memory-patagonia",
+      "query": {
+        "memory": "patagonia"
+      },
+      "bytes": 174870
+    },
+    {
+      "file": "screenshots/mobile-19-memory-kioto.png",
+      "viewport": "mobile",
+      "width": 390,
+      "height": 844,
+      "state": "memory-kioto",
+      "query": {
+        "memory": "kioto"
+      },
+      "bytes": 178895
+    },
+    {
+      "file": "screenshots/mobile-20-memory-islandia.png",
+      "viewport": "mobile",
+      "width": 390,
+      "height": 844,
+      "state": "memory-islandia",
+      "query": {
+        "memory": "islandia"
+      },
+      "bytes": 177171
+    }
+  ]
+}

@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f6efe4">
+  <title>Atlas de Recuerdos</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="app-shell">
+    <aside class="sidebar" aria-label="Explorar recuerdos">
+      <header class="brand">
+        <div class="brand-mark" aria-hidden="true">✦</div>
+        <div>
+          <p class="eyebrow">DIARIO VISUAL</p>
+          <h1>Atlas de<br><em>Recuerdos</em></h1>
+        </div>
+      </header>
+
+      <p class="intro">Pequeñas historias guardadas en los lugares que hicieron grande el viaje.</p>
+
+      <label class="search-wrap">
+        <span class="sr-only">Buscar recuerdos</span>
+        <span aria-hidden="true">⌕</span>
+        <input id="search" type="search" placeholder="Buscar un lugar o momento…" autocomplete="off">
+        <kbd>⌘ K</kbd>
+      </label>
+
+      <nav id="filters" class="filters" aria-label="Filtrar recuerdos">
+        <button class="filter active" data-filter="all"><span>Todos</span><b>14</b></button>
+        <button class="filter" data-filter="viajes"><span>Viajes</span><b>7</b></button>
+        <button class="filter" data-filter="sabores"><span>Sabores</span><b>6</b></button>
+        <button class="filter" data-filter="celebraciones"><span>Celebraciones</span><b>5</b></button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="avatars" aria-hidden="true"><span>AM</span><span>LC</span><span>+3</span></div>
+        <p><strong>14 recuerdos</strong><br>coleccionados desde 2019</p>
+      </div>
+    </aside>
+
+    <section class="map-panel" aria-label="Mapa de recuerdos">
+      <div class="map-noise" aria-hidden="true"></div>
+      <svg class="route-lines" viewBox="0 0 1000 700" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M87 185 C190 110, 245 250, 338 204 S485 120, 564 200 S730 320, 904 155"/>
+        <path d="M121 488 C210 389, 317 531, 407 412 S589 370, 670 486 S814 552, 938 449"/>
+        <path d="M266 76 C348 180, 361 306, 445 361 S642 328, 738 228"/>
+      </svg>
+
+      <div class="map-toolbar">
+        <div><span class="live-dot"></span><strong id="visible-count">14</strong> recuerdos visibles</div>
+        <button id="reset-view" title="Restablecer vista">↺</button>
+      </div>
+
+      <div id="markers" class="markers" aria-live="polite"></div>
+
+      <div class="compass" aria-hidden="true"><span>N</span><i></i></div>
+      <div class="map-credit">MAPA PERSONAL · 2026</div>
+
+      <section id="empty-state" class="empty-state" hidden>
+        <span>◇</span>
+        <h2>Ningún recuerdo por aquí</h2>
+        <p>Prueba con otro lugar, año o palabra.</p>
+        <button id="clear-search">Ver todos los recuerdos</button>
+      </section>
+
+      <article id="memory-card" class="memory-card" aria-live="polite" hidden>
+        <button id="close-card" class="close-card" aria-label="Cerrar recuerdo">×</button>
+        <div id="memory-image" class="memory-image" role="img"></div>
+        <div class="memory-copy">
+          <p id="memory-meta" class="memory-meta"></p>
+          <h2 id="memory-title"></h2>
+          <p id="memory-story" class="memory-story"></p>
+          <div class="memory-bottom">
+            <span id="memory-place"></span>
+            <button id="next-memory">Siguiente recuerdo <b>→</b></button>
+          </div>
+        </div>
+      </article>
+    </section>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
