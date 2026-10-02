@@ -125,6 +125,55 @@ Open <http://localhost:8000>. API documentation is available at
 
 The default `LLM_BACKEND=extractive` mode makes no paid model calls.
 
+## Photo Map Remix: Atlas de Recuerdos
+
+This repository also includes a self-contained responsive photo-map experience
+under [`photo_map/`](photo_map/). It preserves the support assistant while
+adding a standalone Spanish-language portfolio interface with:
+
+- 14 illustrated memories placed on a custom map;
+- working search and URL-addressable state;
+- overlapping **Viajes** (7), **Sabores** (6), and **Celebraciones** (5)
+  filters;
+- keyboard search (`⌘/Ctrl + K`), accessible labels, and selectable markers;
+- responsive desktop and mobile detail layouts; and
+- no external map, image, font, or application service dependency.
+
+Run it locally with Python 3:
+
+```bash
+cd photo_map
+python -m http.server 8001
+```
+
+Then open <http://localhost:8001>. Query parameters make every tested state
+reproducible, for example `?filter=sabores`, `?q=tokio`, and
+`?memory=oaxaca`.
+
+### Verified UI evidence
+
+The app was deployed to a bounded CoreWeave Sandbox and captured from the live
+HTTPS endpoint with headless Chromium. The committed evidence contains exactly
+40 unique PNGs: 20 deterministic states at **1440 × 900** and the same 20 at
+**390 × 844**. Coverage includes the overview, all three filters, two searches,
+and every memory detail.
+
+- [Download the complete UI evidence ZIP](evidence/photo-map-ui-evidence.zip)
+- [Inspect the capture manifest](evidence/manifest.json)
+- [Review capture and validation instructions](evidence/README.md)
+
+Recreate the matrix against any deployment with:
+
+```bash
+python -m pip install playwright
+python -m playwright install chromium
+EVIDENCE_APP_URL=http://localhost:8001 python evidence/capture_matrix.py
+```
+
+The capture script fails unless all 40 screenshots render and each file passes
+the minimum-size check. The committed archive was additionally verified for
+PNG integrity, exact viewport dimensions, unique SHA-256 content, and ZIP CRCs.
+
 ## Launch a bounded CoreWeave Sandbox preview
 
 The included launcher creates a public HTTPS preview with a hard one-hour
@@ -222,6 +271,14 @@ data/
   knowledge_base.json
   eval_set.json
 tests/
+photo_map/
+  index.html        Responsive Atlas de Recuerdos interface
+  styles.css        Self-contained desktop/mobile visual system
+  app.js            Memories, filtering, search, URL state, interactions
+evidence/
+  screenshots/      20 desktop + 20 mobile live-render captures
+  manifest.json     Capture state, dimensions, source, and byte metadata
+  photo-map-ui-evidence.zip
 ```
 
 ## Safety and limitations
