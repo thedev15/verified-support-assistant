@@ -1,1 +1,175 @@
-# verified-support-assistant
+# Verified Support Assistant
+
+A portfolio-quality, citation-first e-commerce support assistant. It retrieves
+relevant policy excerpts, refuses requests it cannot verify or perform, and can
+generate answers with either a deterministic no-cost baseline or CoreWeave
+Forge Serverless Inference.
+
+> **Status:** supervised build in progress. The deterministic baseline is
+> implemented and tested. Live model evaluation, Weave dashboards, deployment,
+> and the final case study are the next milestones.
+
+## Why this project exists
+
+Many chatbot demos optimize for fluent answers and ignore whether an answer is
+supported. This project treats groundedness as a product requirement:
+
+- every supported answer includes structured citations;
+- weak or out-of-scope matches are refused;
+- requests requiring private account access or transactions are rejected;
+- retrieval, refusal behavior, and answer content are evaluated separately;
+- paid model calls are optional and bounded.
+
+## Baseline results
+
+Measured locally on `data/eval_set.json` (20 curated questions, 2026-10-02):
+
+| Metric | Result |
+|---|---:|
+| Retrieval accuracy (expected policy in top 3) | 100% |
+| Refusal accuracy | 100% |
+| Required-keyword coverage | 92.86% |
+| Unit tests | 8/8 passing |
+
+These results validate the small synthetic benchmark only. They are not a
+production-quality claim; the next milestone expands the dataset and evaluates
+generated answers with live models.
+
+## Architecture
+
+```mermaid
+flowchart LR
+    U[Browser or API client] --> A[FastAPI /api/ask]
+    A --> G[Scope and account-access guardrails]
+    G --> R[TF-IDF retrieval]
+    R --> K[(Versioned policy corpus)]
+    R --> T{Relevance threshold}
+    T -->|weak evidence| X[Verified refusal]
+    T -->|supported| B{Answer backend}
+    B -->|extractive| E[Deterministic cited answer]
+    B -->|inference| L[Forge Serverless Inference]
+    E --> C[Structured citations]
+    L --> C
+    A -. optional .-> W[Weave traces]
+```
+
+## Features
+
+- FastAPI backend and responsive single-page interface
+- Inspectable TF-IDF retrieval baseline
+- Twelve synthetic policy documents spanning shipping, returns, refunds,
+  payments, warranties, security, international orders, and gift cards
+- Deterministic extractive mode requiring no API calls
+- Optional OpenAI-compatible Forge Inference backend
+- Explicit guardrails for account-specific, transactional, and out-of-scope requests
+- Structured citations with document IDs, sources, and relevance scores
+- Deterministic evaluation suite and unit tests
+- Optional Weave tracing
+- Docker packaging and GitHub Actions CI
+
+## Quick start
+
+Prerequisites: Python 3.11+.
+
+```bash
+git clone https://github.com/thedev15/verified-support-assistant.git
+cd verified-support-assistant
+python -m venv .venv
+source .venv/bin/activate       # Windows: .venv\Scripts\activate
+python -m pip install -e ".[dev]"
+cp .env.example .env
+make test
+make evaluate
+make run
+```
+
+Open <http://localhost:8000>. API documentation is available at
+<http://localhost:8000/docs>.
+
+The default `LLM_BACKEND=extractive` mode makes no paid model calls.
+
+## Use Forge Serverless Inference
+
+1. Copy `.env.example` to `.env` and load the variables in your shell.
+2. Set `LLM_BACKEND=inference`.
+3. Set `WANDB_API_KEY`, `WANDB_ENTITY`, and `WANDB_PROJECT`.
+4. Confirm `INFERENCE_MODEL` is an exact model ID visible to your account.
+5. Start with a small, bounded evaluation because inference consumes credits.
+
+The client uses `https://api.inference.wandb.ai/v1` and attributes usage to
+`WANDB_ENTITY/WANDB_PROJECT` when both are supplied.
+
+## Enable Weave tracing
+
+Set:
+
+```bash
+ENABLE_WEAVE=true
+WEAVE_PROJECT=your-team/verified-support-assistant
+```
+
+Weave tracing is independent of Inference billing attribution. Keep both
+projects explicit so traces and usage land where expected.
+
+## Evaluate
+
+```bash
+python -m support_assistant.evaluate
+```
+
+The benchmark intentionally separates:
+
+- **retrieval accuracy:** was the expected policy retrieved in the cited set?
+- **refusal accuracy:** did the assistant answer supported questions and refuse
+  unsupported ones?
+- **keyword coverage:** did the deterministic answer preserve required facts?
+
+## API example
+
+```bash
+curl -s http://localhost:8000/api/ask \
+  -H 'Content-Type: application/json' \
+  -d '{"question":"How long does a card refund take?"}'
+```
+
+## Repository layout
+
+```text
+support_assistant/
+  api.py            FastAPI application and optional Weave initialization
+  config.py         Environment-based configuration
+  generation.py     Extractive and Forge Inference answer backends
+  knowledge.py      Corpus loading and validation
+  retrieval.py      TF-IDF ranking
+  service.py        Guardrails, thresholding, citations, orchestration
+  evaluate.py       Deterministic benchmark runner
+data/
+  knowledge_base.json
+  eval_set.json
+tests/
+```
+
+## Safety and limitations
+
+- The corpus and URLs are synthetic and marked with the reserved `.invalid`
+  domain. This assistant is not connected to a real retailer.
+- It cannot inspect accounts, track live orders, take payment, or place orders.
+- Regex guardrails and TF-IDF retrieval are transparent baselines, not complete
+  defenses against adversarial prompts.
+- Live-model quality and cost must be measured before deployment.
+- Do not place secrets in `.env` files committed to Git.
+
+## Roadmap
+
+- [x] Versioned synthetic knowledge base
+- [x] Retrieval and refusal baseline
+- [x] Web/API interface
+- [x] Unit and deterministic evaluation tests
+- [ ] Larger adversarial evaluation set
+- [ ] Bounded comparison of two hosted models/configurations
+- [ ] Weave traces and W&B evaluation report
+- [ ] Deployment and recorded demo
+
+## License
+
+MIT
