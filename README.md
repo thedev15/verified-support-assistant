@@ -125,6 +125,26 @@ Open <http://localhost:8000>. API documentation is available at
 
 The default `LLM_BACKEND=extractive` mode makes no paid model calls.
 
+## Launch a bounded CoreWeave Sandbox preview
+
+The included launcher creates a public HTTPS preview with a hard one-hour
+lifetime. It requests 1 CPU and 2 GiB of memory, uses the no-inference
+`extractive` backend, and makes no hosted-model calls. The maximum resource
+budget is therefore **1 vCPU-hour + 2 GiB-hours**, with no GPU allocation.
+
+```bash
+python -m pip install "cwsandbox[wandb]>=1.14,<2"
+export WANDB_API_KEY="..."
+python scripts/deploy_sandbox.py
+```
+
+The command prints the sandbox ID and generated HTTPS URL after `/health`
+passes. The URL is open to the internet and disappears when the sandbox stops
+or reaches its one-hour limit. Serverless Sandboxes are in public preview;
+check Forge billing for the current W&B-billed CPU and memory rate before
+launching. This preview is suitable for a portfolio demo, not durable
+production hosting.
+
 ## Use Forge Serverless Inference
 
 1. Copy `.env.example` to `.env` and load the variables in your shell.
