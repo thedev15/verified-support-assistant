@@ -1,0 +1,17 @@
+**/__pycache__/
+**/*.py[cod]
+.git/
+.github/
+.pytest_cache/
+.ruff_cache/
+.venv/
+**/node_modules/
+docs/
+reports/
+scripts/
+tests/
+*.egg-info/
+*.log
+.env
+.env.*
+!.env.example

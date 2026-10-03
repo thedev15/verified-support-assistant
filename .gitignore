@@ -6,6 +6,9 @@ __pycache__/
 .env
 wandb/
 reports/final_audit_metrics.json
+reports/final_metrics.json
+docs/evidence/*.log
+web/node_modules/
 dist/
 build/
 *.egg-info/

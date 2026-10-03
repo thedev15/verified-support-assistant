@@ -1,0 +1,22 @@
+{
+  "base_url": "http://127.0.0.1:8000",
+  "console_errors": [],
+  "page_errors": [],
+  "failed_responses": [],
+  "accessibility": {
+    "/assistant": [],
+    "/policies/REF-001": [],
+    "/policies": [],
+    "/evaluations": [],
+    "/about": []
+  },
+  "checks": [
+    "desktop assistant stream, citation, and history",
+    "citation deep-link and policy detail",
+    "policy catalog search",
+    "evaluation metrics, filtering, and case detail",
+    "architecture and limitations page",
+    "390px responsive layout across every product route"
+  ],
+  "status": "pass"
+}
