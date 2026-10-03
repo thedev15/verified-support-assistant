@@ -146,10 +146,22 @@ def main() -> None:
                 consecutive_errors += 1
                 error = f"{type(exc).__name__}: {exc}"
                 table.add_data(
-                    example["question"], example["answerable"],
-                    example.get("expected_document_id"), "", None, "", "",
-                    time.perf_counter() - started, None, None, None, False, False,
-                    False, None, error,
+                    example["question"],
+                    example["answerable"],
+                    example.get("expected_document_id"),
+                    "",
+                    None,
+                    "",
+                    "",
+                    time.perf_counter() - started,
+                    None,
+                    None,
+                    None,
+                    False,
+                    False,
+                    False,
+                    None,
+                    error,
                 )
                 lowered = error.lower()
                 if any(term in lowered for term in ("billing", "credit", "quota", "401", "403")):
@@ -180,15 +192,28 @@ def main() -> None:
             keywords = [word.lower() for word in example.get("required_keywords", [])]
             keyword_coverage = None
             if keywords and example["answerable"] and not response.refused:
-                keyword_coverage = sum(word in response.answer.lower() for word in keywords) / len(keywords)
+                keyword_coverage = sum(word in response.answer.lower() for word in keywords) / len(
+                    keywords
+                )
                 keyword_scores.append(keyword_coverage)
 
             table.add_data(
-                example["question"], example["answerable"], expected_id,
-                response.answer, response.refused, ", ".join(response_ids),
-                ", ".join(answer_ids), latency, response.prompt_tokens,
-                response.completion_tokens, response.finish_reason, retrieval_correct, refusal_correct,
-                citation_valid, keyword_coverage, error,
+                example["question"],
+                example["answerable"],
+                expected_id,
+                response.answer,
+                response.refused,
+                ", ".join(response_ids),
+                ", ".join(answer_ids),
+                latency,
+                response.prompt_tokens,
+                response.completion_tokens,
+                response.finish_reason,
+                retrieval_correct,
+                refusal_correct,
+                citation_valid,
+                keyword_coverage,
+                error,
             )
             run.log({"progress/completed_examples": index + 1})
 
@@ -202,7 +227,8 @@ def main() -> None:
             "eval/refusal_accuracy": counters["refusal"] / completed if completed else 0,
             "eval/citation_validity": (
                 counters["citation_valid"] / counters["citation_eligible"]
-                if counters["citation_eligible"] else 0
+                if counters["citation_eligible"]
+                else 0
             ),
             "eval/keyword_coverage": statistics.mean(keyword_scores) if keyword_scores else 0,
             "usage/prompt_tokens": counters["prompt_tokens"],

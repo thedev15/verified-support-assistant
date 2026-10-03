@@ -33,9 +33,11 @@ python scripts/capture_live_demo.py --base-url http://localhost:8000
 To repeat the same bounded private-Sandbox workflow:
 
 ```bash
-python -m pip install "cwsandbox[wandb]>=1.14,<2"
+python -m pip install "cwsandbox[wandb]~=1.14.0"
 python scripts/deploy_sandbox_demo.py --lifetime-minutes 90 --private-capture
 ```
 
 `verified-support-live-evidence.zip` contains the 40 PNGs, full JSON responses,
-verification summary, and this methodology.
+verification summary, and this methodology. The screenshots show the complete
+0.2 interface, including the submitted question, verification state, answer or
+safe refusal, and any supporting policy sources.

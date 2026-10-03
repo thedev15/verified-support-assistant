@@ -7,7 +7,6 @@ from openai import OpenAI
 
 from .models import RetrievedDocument
 
-
 SYSTEM_PROMPT = """You are a careful e-commerce support assistant.
 Answer only from the supplied policy excerpts. Do not use outside knowledge.
 If the excerpts do not establish the answer, say exactly:

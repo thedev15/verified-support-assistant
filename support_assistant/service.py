@@ -7,7 +7,6 @@ from .generation import generate_extractive, generate_with_inference
 from .models import AskResponse, Citation, RetrievedDocument
 from .retrieval import TfidfRetriever
 
-
 REFUSAL = "I don't have enough verified information to answer that."
 CITATION_PATTERN = re.compile(r"\[([A-Z][A-Z0-9_-]+)\]")
 
@@ -33,7 +32,10 @@ PROMPT_INJECTION_PATTERNS = (
 
 POLICY_DOMAIN_HINTS = (
     (r"\b(change|edit|correct|update)\b.*\b(shipping|delivery)\s+address\b", "ORD-001"),
-    (r"\b(refund|refundable|reimburse)\b.*\b(express|shipping|delivery)\s+(fee|charge|cost)\b", "REF-001"),
+    (
+        r"\b(refund|refundable|reimburse)\b.*\b(express|shipping|delivery)\s+(fee|charge|cost)\b",
+        "REF-001",
+    ),
 )
 
 
@@ -111,16 +113,20 @@ class SupportService:
         answer = normalize_generated_text(generated.text, [doc.id for doc in documents])
         refused = answer == REFUSAL
         cited_ids = set(CITATION_PATTERN.findall(answer))
-        citations = [
-            Citation(
-                document_id=doc.id,
-                title=doc.title,
-                source=doc.source,
-                score=round(doc.score, 4),
-            )
-            for doc in documents
-            if doc.id in cited_ids
-        ] if not refused else []
+        citations = (
+            [
+                Citation(
+                    document_id=doc.id,
+                    title=doc.title,
+                    source=doc.source,
+                    score=round(doc.score, 4),
+                )
+                for doc in documents
+                if doc.id in cited_ids
+            ]
+            if not refused
+            else []
+        )
         return AskResponse(
             answer=answer,
             citations=citations,

@@ -14,7 +14,6 @@ from zipfile import ZIP_DEFLATED, ZipFile
 
 from playwright.sync_api import sync_playwright
 
-
 ROOT = Path(__file__).resolve().parents[1]
 EVAL_PATH = ROOT / "data" / "eval_set.json"
 OUTPUT_DIR = ROOT / "docs" / "live-demo"
@@ -99,7 +98,9 @@ def write_archive() -> None:
     ]
     with ZipFile(ARCHIVE_PATH, "w", ZIP_DEFLATED, compresslevel=9) as archive:
         for path in paths:
-            archive.write(path, Path("verified-support-live-evidence") / path.relative_to(OUTPUT_DIR))
+            archive.write(
+                path, Path("verified-support-live-evidence") / path.relative_to(OUTPUT_DIR)
+            )
     with ZipFile(ARCHIVE_PATH) as archive:
         if archive.testzip() is not None or len(archive.infolist()) != 43:
             raise RuntimeError("Evidence ZIP validation failed")
@@ -131,11 +132,13 @@ def main() -> None:
         for index, example in enumerate(examples, start=1):
             api_payload: dict[str, object] = {}
 
-            def record_api(response) -> None:
+            def record_api(response, case_index: int = index) -> None:
                 nonlocal api_payload
                 if response.url.endswith("/api/ask"):
                     if response.status != 200:
-                        raise RuntimeError(f"Case {index}: API returned HTTP {response.status}")
+                        raise RuntimeError(
+                            f"Case {case_index}: API returned HTTP {response.status}"
+                        )
                     api_payload = response.json()
 
             page.on("response", record_api)
@@ -158,9 +161,7 @@ def main() -> None:
             cited_ids = [citation["document_id"] for citation in citations]
             answer = str(api_payload.get("answer", ""))
             expected_document_id = example["expected_document_id"]
-            expected_retrieved = (
-                expected_document_id in cited_ids if expected_document_id else None
-            )
+            expected_retrieved = expected_document_id in cited_ids if expected_document_id else None
             refusal_correct = bool(api_payload.get("refused")) is (not example["answerable"])
             record = {
                 "case": index,
@@ -199,15 +200,11 @@ def main() -> None:
         bool(record["expected_document_retrieved"]) for record in answerable
     ) / len(answerable)
     keyword_checks = [
-        present
-        for record in answerable
-        for present in record["required_keywords_present"].values()
+        present for record in answerable for present in record["required_keywords_present"].values()
     ]
     keyword_coverage = sum(keyword_checks) / len(keyword_checks)
     hashes = {record["screenshot_sha256"] for record in records}
-    verification_pass = (
-        refusal_accuracy == 1.0 and retrieval_accuracy == 1.0 and len(hashes) == 40
-    )
+    verification_pass = refusal_accuracy == 1.0 and retrieval_accuracy == 1.0 and len(hashes) == 40
     manifest = {
         "schema_version": 2,
         "evaluation_version": evaluation["version"],
@@ -233,12 +230,17 @@ def main() -> None:
     write_archive()
     if not verification_pass:
         raise RuntimeError("Live evidence verification gate failed")
-    print(json.dumps({
-        "cases": len(records),
-        "screenshots": manifest["screenshots"],
-        "metrics": manifest["metrics"],
-        "archive": str(ARCHIVE_PATH),
-    }, indent=2))
+    print(
+        json.dumps(
+            {
+                "cases": len(records),
+                "screenshots": manifest["screenshots"],
+                "metrics": manifest["metrics"],
+                "archive": str(ARCHIVE_PATH),
+            },
+            indent=2,
+        )
+    )
 
 
 if __name__ == "__main__":

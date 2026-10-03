@@ -12,9 +12,7 @@ from .service import SupportService
 
 def evaluate(dataset_path: Path) -> dict[str, float | int]:
     settings = get_settings()
-    service = SupportService(
-        TfidfRetriever(load_documents(settings.knowledge_path)), settings
-    )
+    service = SupportService(TfidfRetriever(load_documents(settings.knowledge_path)), settings)
     examples = json.loads(dataset_path.read_text(encoding="utf-8"))["examples"]
 
     retrieval_hits = 0

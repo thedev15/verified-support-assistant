@@ -15,7 +15,6 @@ from zipfile import ZipFile
 import wandb
 from cwsandbox import AuthHeaders, AuthStrategy, ResourceOptions, Sandbox, Service
 
-
 ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -42,10 +41,13 @@ def build_archive() -> bytes:
         "scripts/capture_live_demo.py",
     ]
     files.extend(
-        str(path.relative_to(ROOT))
-        for path in sorted((ROOT / "support_assistant").glob("*.py"))
+        str(path.relative_to(ROOT)) for path in sorted((ROOT / "support_assistant").glob("*.py"))
     )
-    files.append("support_assistant/static/index.html")
+    files.extend(
+        str(path.relative_to(ROOT))
+        for path in sorted((ROOT / "support_assistant" / "static").glob("*"))
+        if path.is_file()
+    )
     payload = io.BytesIO()
     with tarfile.open(fileobj=payload, mode="w:gz") as archive:
         for relative_path in files:
@@ -101,9 +103,7 @@ def main() -> None:
             "python -m pip install --disable-pip-version-check -e . && "
             f"{browser_install}true"
         )
-        install = sandbox.exec(
-            ["bash", "-lc", install_command], timeout_seconds=300
-        ).result()
+        install = sandbox.exec(["bash", "-lc", install_command], timeout_seconds=300).result()
         if install.returncode != 0:
             raise RuntimeError(f"Sandbox install failed: {install.stderr}")
 
@@ -138,9 +138,7 @@ def main() -> None:
             "        time.sleep(1)\n"
             "PY"
         )
-        health = sandbox.exec(
-            ["bash", "-lc", health_command], timeout_seconds=120
-        ).result()
+        health = sandbox.exec(["bash", "-lc", health_command], timeout_seconds=120).result()
         if health.returncode != 0:
             raise RuntimeError(f"Sandbox health check failed: {health.stderr}")
 
@@ -189,15 +187,11 @@ def main() -> None:
             result.update(
                 {
                     "visibility": "private",
-                    "evidence_archive": str(
-                        output_dir / "verified-support-live-evidence.zip"
-                    ),
+                    "evidence_archive": str(output_dir / "verified-support-live-evidence.zip"),
                 }
             )
         else:
-            result.update(
-                {"public_url": public_url, "health_url": f"{public_url}/health"}
-            )
+            result.update({"public_url": public_url, "health_url": f"{public_url}/health"})
         print(json.dumps({"ready": result}, indent=2), flush=True)
     except Exception:
         sandbox.stop(missing_ok=True).result(timeout=120)

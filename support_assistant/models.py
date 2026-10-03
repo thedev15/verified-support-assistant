@@ -1,6 +1,8 @@
 from __future__ import annotations
 
-from pydantic import BaseModel, Field
+from uuid import uuid4
+
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 class Document(BaseModel):
@@ -15,7 +17,16 @@ class RetrievedDocument(Document):
 
 
 class AskRequest(BaseModel):
+    model_config = ConfigDict(str_strip_whitespace=True)
+
     question: str = Field(min_length=3, max_length=2_000)
+
+    @field_validator("question")
+    @classmethod
+    def question_must_contain_text(cls, value: str) -> str:
+        if not any(character.isalnum() for character in value):
+            raise ValueError("question must contain letters or numbers")
+        return value
 
 
 class Citation(BaseModel):
@@ -26,6 +37,8 @@ class Citation(BaseModel):
 
 
 class AskResponse(BaseModel):
+    request_id: str = Field(default_factory=lambda: uuid4().hex)
+    latency_ms: float = Field(default=0, ge=0)
     answer: str
     citations: list[Citation]
     refused: bool

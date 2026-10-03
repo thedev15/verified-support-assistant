@@ -1,5 +1,5 @@
-from pathlib import Path
 import unittest
+from pathlib import Path
 
 from support_assistant.knowledge import load_documents
 from support_assistant.retrieval import TfidfRetriever

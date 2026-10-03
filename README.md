@@ -7,9 +7,10 @@ relevant policy excerpts, refuses requests it cannot verify or perform, and can
 generate answers with either a deterministic no-cost baseline or CoreWeave
 Forge Serverless Inference.
 
-> **Status:** the deterministic baseline, expanded benchmark, API, verified
-> interface, bounded hosted-model comparison, Weave traces, W&B report, and
-> reproducible Sandbox preview workflow are complete.
+> **Status:** VSA 0.2 includes the verified API and responsive browser app,
+> policy/About discovery, deterministic and hosted-model backends, security
+> headers, local and container tooling, evaluation gates, Weave observability,
+> and reproducible private-Sandbox browser evidence.
 
 ## Why this project exists
 
@@ -32,7 +33,7 @@ and account-action cases, 2026-10-02) with the current deterministic gate:
 | Retrieval accuracy (expected policy in top 3) | 100% |
 | Refusal accuracy | 100% |
 | Required-keyword coverage | 100% |
-| Core unit tests | 20/20 passing |
+| Unit and API tests | 33/33 passing |
 
 These results validate the synthetic benchmark only. They are not a
 production-quality claim; the next milestone evaluates generated answers with
@@ -116,7 +117,11 @@ flowchart LR
 
 ## Features
 
-- FastAPI backend and responsive single-page interface
+- FastAPI backend with versioned OpenAPI, runtime metadata, policy discovery,
+  request IDs, latency, startup validation, and defensive browser headers
+- Accessible responsive interface with dark/light themes, example prompts,
+  keyboard submission, copy/reset actions, safe errors, and live runtime status
+- Dedicated About, policy-library, and human-readable policy pages
 - Inspectable TF-IDF retrieval baseline
 - Twelve synthetic policy documents spanning shipping, returns, refunds,
   payments, warranties, security, international orders, and gift cards
@@ -126,7 +131,9 @@ flowchart LR
 - Structured citations with document IDs, sources, and relevance scores
 - Deterministic evaluation suite and unit tests
 - Optional Weave tracing
-- Docker packaging and GitHub Actions CI
+- Non-root Docker packaging and least-privilege GitHub Actions CI
+- Reproducible Make targets, local-development guide, API reference,
+  architecture notes, contribution guide, and security policy
 
 ## Quick start
 
@@ -145,29 +152,39 @@ make run
 ```
 
 Open <http://localhost:8000>. API documentation is available at
-<http://localhost:8000/docs>.
+<http://localhost:8000/docs>; the About and policy-library pages are at
+<http://localhost:8000/about> and <http://localhost:8000/policies>.
 
 The default `LLM_BACKEND=extractive` mode makes no paid model calls.
+For Windows PowerShell, Docker, environment loading, browser capture, optional
+Inference/Weave setup, and troubleshooting, see the
+**[complete local-development guide](docs/LOCAL_DEVELOPMENT.md)**.
 
-## Launch a bounded CoreWeave Sandbox preview
+## Documentation
 
-The included launcher creates a public HTTPS preview with a hard one-hour
-lifetime. It requests 1 CPU and 2 GiB of memory, uses the no-inference
-`extractive` backend, and makes no hosted-model calls. The maximum resource
-budget is therefore **1 vCPU-hour + 2 GiB-hours**, with no GPU allocation.
+- [Local development and required tools](docs/LOCAL_DEVELOPMENT.md)
+- [Architecture and design decisions](docs/ARCHITECTURE.md)
+- [API contract and security headers](docs/API.md)
+- [Contributing](CONTRIBUTING.md)
+- [Security policy](SECURITY.md)
+- [Verified browser evidence](docs/live-demo/README.md)
+
+## Run a bounded CoreWeave Sandbox capture
+
+The tested workflow creates a private Sandbox with a hard lifetime, 1 CPU, 2
+GiB of memory, no GPU, and the no-inference `extractive` backend. It runs the
+app and all 40 Chromium cases inside the Sandbox, validates the archive, and
+copies evidence back to the repository.
 
 ```bash
-python -m pip install "cwsandbox[wandb]>=1.14,<2"
-export WANDB_API_KEY="..."
-python scripts/deploy_sandbox.py
+python -m pip install -e ".[dev,sandbox]"
+python scripts/deploy_sandbox_demo.py --lifetime-minutes 90 --private-capture
 ```
 
-The command prints the sandbox ID and generated HTTPS URL after `/health`
-passes. The URL is open to the internet and disappears when the sandbox stops
-or reaches its one-hour limit. Serverless Sandboxes are in public preview;
-check Forge billing for the current W&B-billed CPU and memory rate before
-launching. This preview is suitable for a portfolio demo, not durable
-production hosting.
+This is verification of an isolated deployed runtime, not a public or durable
+production endpoint. Public service placement depends on runner capability and
+is not assumed. Stop successful temporary Sandboxes after evidence retrieval
+and check current Forge billing before use.
 
 ## Use Forge Serverless Inference
 
@@ -242,9 +259,15 @@ support_assistant/
   retrieval.py      TF-IDF ranking
   service.py        Guardrails, thresholding, citations, orchestration
   evaluate.py       Deterministic benchmark runner
+  static/           HTML, CSS, and JavaScript browser application
 data/
   knowledge_base.json
   eval_set.json
+docs/
+  LOCAL_DEVELOPMENT.md
+  ARCHITECTURE.md
+  API.md
+  live-demo/
 tests/
 ```
 
@@ -268,7 +291,8 @@ tests/
 - [x] Reproducible W&B baseline run with case-level evaluation table
 - [x] Bounded comparison of two hosted models/configurations
 - [x] Weave traces and W&B evaluation report
-- [ ] Deployment and recorded demo
+- [x] Bounded CoreWeave Sandbox capture and verified browser evidence
+- [x] Modern responsive UI, About/policy discovery, and complete local docs
 
 ## License
 
