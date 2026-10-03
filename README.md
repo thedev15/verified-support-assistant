@@ -1,6 +1,8 @@
 # Verified Support Assistant
 
 [![CI](https://github.com/thedev15/verified-support-assistant/actions/workflows/ci.yml/badge.svg)](https://github.com/thedev15/verified-support-assistant/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/thedev15/verified-support-assistant)](https://github.com/thedev15/verified-support-assistant/releases/tag/v0.3.0)
+[![Container](https://github.com/thedev15/verified-support-assistant/actions/workflows/release-container.yml/badge.svg)](https://github.com/thedev15/verified-support-assistant/pkgs/container/verified-support-assistant)
 
 A portfolio-quality, citation-first e-commerce support assistant. It retrieves
 relevant policy excerpts, refuses requests it cannot verify or perform, and can
@@ -11,6 +13,9 @@ Forge Serverless Inference.
 > typed OpenAPI contract, streaming verification progress, policy and
 > evaluation workspaces, local conversation history, optional hosted-model
 > generation, and reproducible CoreWeave Sandbox browser evidence.
+> The official `v0.3.0` wheel and checksums are published on
+> [GitHub Releases](https://github.com/thedev15/verified-support-assistant/releases/tag/v0.3.0),
+> with a public, provenance-attested container on GHCR.
 
 ## Why this project exists
 
@@ -166,6 +171,21 @@ For Windows PowerShell, Docker, environment loading, browser capture, optional
 Inference/Weave setup, and troubleshooting, see the
 **[complete local-development guide](docs/LOCAL_DEVELOPMENT.md)**.
 
+### Install the official wheel
+
+Download the wheel and `SHA256SUMS` from the
+[v0.3.0 release](https://github.com/thedev15/verified-support-assistant/releases/tag/v0.3.0),
+verify it, and start the same-origin API and React application:
+
+```bash
+sha256sum --check SHA256SUMS
+python -m pip install verified_support_assistant-0.3.0-py3-none-any.whl
+python -m uvicorn support_assistant.api:app --host 0.0.0.0 --port 8000
+```
+
+The expected wheel SHA-256 is
+`a91dd5d07b56a07a11daf4f737296b409e381e0c4a6e5ea43f16d230a4ac42d8`.
+
 ## Documentation
 
 - [Local development and required tools](docs/LOCAL_DEVELOPMENT.md)
@@ -176,6 +196,25 @@ Inference/Weave setup, and troubleshooting, see the
 - [Contributing](CONTRIBUTING.md)
 - [Security policy](SECURITY.md)
 - [Verified browser evidence](docs/live-demo/README.md)
+
+## Run the public release container
+
+The multi-stage, non-root image is public and needs no registry login:
+
+```bash
+docker pull ghcr.io/thedev15/verified-support-assistant:0.3.0
+docker run --rm -p 8000:8000 \
+  ghcr.io/thedev15/verified-support-assistant:0.3.0
+```
+
+For an immutable deployment, pin the verified OCI digest:
+
+```text
+ghcr.io/thedev15/verified-support-assistant@sha256:cba6aab15d9dee4b5f821a9917d0dbde6d868ff23a3e8f187f5b6b2b5bedc8ff
+```
+
+The image also carries the `latest` tag. GitHub Actions publishes both tags and
+an OCI build-provenance attestation from `.github/workflows/release-container.yml`.
 
 ## Run a bounded CoreWeave Sandbox capture
 
