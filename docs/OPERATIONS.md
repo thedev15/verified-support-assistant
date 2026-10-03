@@ -33,6 +33,22 @@ before connecting real customer data or account actions.
 
 ## Container
 
+The official public image is published by GitHub Actions with provenance:
+
+```bash
+docker pull ghcr.io/thedev15/verified-support-assistant:0.3.0
+docker run --rm -p 8000:8000 \
+  ghcr.io/thedev15/verified-support-assistant:0.3.0
+```
+
+Production manifests should pin the immutable release digest:
+
+```text
+ghcr.io/thedev15/verified-support-assistant@sha256:cba6aab15d9dee4b5f821a9917d0dbde6d868ff23a3e8f187f5b6b2b5bedc8ff
+```
+
+To build the same Dockerfile locally instead:
+
 ```bash
 docker build -t verified-support-assistant:0.3.0 .
 docker run --rm -p 8000:8000 \
