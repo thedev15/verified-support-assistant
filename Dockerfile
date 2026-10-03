@@ -1,4 +1,12 @@
-FROM python:3.11-slim-bookworm
+FROM node:22-bookworm-slim AS frontend
+
+WORKDIR /build
+COPY web/package.json web/package-lock.json ./web/
+RUN cd web && npm ci
+COPY web ./web
+RUN cd web && npm run build:frontend
+
+FROM python:3.11-slim-bookworm AS runtime
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
@@ -12,6 +20,7 @@ RUN groupadd --system app && useradd --system --gid app --home-dir /app app
 COPY pyproject.toml README.md ./
 COPY support_assistant ./support_assistant
 COPY data ./data
+COPY --from=frontend /build/support_assistant/static ./support_assistant/static
 RUN python -m pip install --no-cache-dir --no-compile . \
     && chown -R app:app /app
 

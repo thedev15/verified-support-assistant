@@ -1,4 +1,4 @@
-"""Capture all 40 benchmark questions through the deployed support-assistant UI."""
+"""Capture all 40 benchmark questions through the production React UI."""
 
 from __future__ import annotations
 
@@ -48,7 +48,7 @@ def write_results(manifest: dict[str, object]) -> None:
     rows = [
         "# Verified Support Assistant — live UI evidence",
         "",
-        "Every record below was submitted through the deployed browser interface to `/api/ask`.",
+        "Every record below was submitted through the production React interface to `/api/ask/stream`.",
         "The screenshots show the real question, rendered answer or refusal, verification badge,",
         "and policy citations. No response text was injected by the capture script.",
         "",
@@ -130,23 +130,41 @@ def main() -> None:
         page = context.new_page()
 
         for index, example in enumerate(examples, start=1):
-            api_payload: dict[str, object] = {}
-
-            def record_api(response, case_index: int = index) -> None:
-                nonlocal api_payload
-                if response.url.endswith("/api/ask"):
-                    if response.status != 200:
-                        raise RuntimeError(
-                            f"Case {case_index}: API returned HTTP {response.status}"
-                        )
-                    api_payload = response.json()
-
-            page.on("response", record_api)
-            page.goto(base_url, wait_until="networkidle", timeout=30_000)
+            page.goto(f"{base_url}/assistant", wait_until="networkidle", timeout=30_000)
             page.locator("#question").fill(example["question"])
-            page.locator("#ask").click()
+            with page.expect_response(
+                lambda response: response.url.endswith("/api/ask/stream")
+            ) as response_info:
+                page.locator("#ask").click()
+            response = response_info.value
+            if response.status != 200:
+                raise RuntimeError(f"Case {index}: stream returned HTTP {response.status}")
             page.locator('#response[data-complete="true"]').wait_for(timeout=30_000)
             page.wait_for_timeout(100)
+            citation_rows = page.locator(".citation")
+            citations = []
+            for citation_index in range(citation_rows.count()):
+                row = citation_rows.nth(citation_index)
+                heading = row.locator("strong").inner_text()
+                document_id, title = heading.split(" · ", maxsplit=1)
+                score = float(row.locator(".score").inner_text().split("%", maxsplit=1)[0]) / 100
+                citations.append(
+                    {
+                        "document_id": document_id,
+                        "title": title,
+                        "source": row.locator("a").get_attribute("href"),
+                        "score": score,
+                    }
+                )
+            response_meta = page.locator(".response-meta").inner_text().split(" · ")
+            api_payload: dict[str, object] = {
+                "answer": page.locator(".answer").inner_text(),
+                "refused": page.locator("#response").get_attribute("data-refused") == "true",
+                "citations": citations,
+                "backend": response_meta[0] if response_meta else None,
+                "model": None,
+                "rendered_response_meta": response_meta,
+            }
 
             screenshot_name = f"{index:02d}-{slugify(example['question'])}.png"
             screenshot_path = SCREENSHOT_DIR / screenshot_name
@@ -155,9 +173,6 @@ def main() -> None:
                 raise RuntimeError(f"Case {index}: suspiciously small screenshot")
             width, height = png_dimensions(screenshot_path)
 
-            if not api_payload:
-                raise RuntimeError(f"Case {index}: browser did not capture the API response")
-            citations = api_payload.get("citations", [])
             cited_ids = [citation["document_id"] for citation in citations]
             answer = str(api_payload.get("answer", ""))
             expected_document_id = example["expected_document_id"]
@@ -189,7 +204,6 @@ def main() -> None:
                 "response": api_payload,
             }
             records.append(record)
-            page.remove_listener("response", record_api)
             print(f"captured {index:02d}/{len(examples)}: {screenshot_name}", flush=True)
 
         browser.close()
@@ -208,7 +222,7 @@ def main() -> None:
     manifest = {
         "schema_version": 2,
         "evaluation_version": evaluation["version"],
-        "capture_method": "browser form submission to live /api/ask endpoint",
+        "capture_method": "React browser form submission to live /api/ask/stream SSE endpoint",
         "capture_environment": args.capture_environment,
         "base_url": base_url,
         "started_at_utc": started_at.isoformat(),

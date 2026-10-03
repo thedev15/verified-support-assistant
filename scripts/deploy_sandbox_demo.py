@@ -3,10 +3,13 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import io
 import json
 import os
 import shutil
+import subprocess
+import sys
 import tarfile
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
@@ -31,28 +34,44 @@ def sandbox_auth() -> AuthHeaders | AuthStrategy:
     return AuthStrategy.WANDB
 
 
-def build_archive() -> bytes:
+def build_archive() -> tuple[bytes, str]:
+    release_dir = ROOT / ".sandbox-release"
+    shutil.rmtree(release_dir, ignore_errors=True)
+    release_dir.mkdir()
+    subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "pip",
+            "wheel",
+            ".",
+            "--no-deps",
+            "--wheel-dir",
+            str(release_dir),
+        ],
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    wheels = list(release_dir.glob("verified_support_assistant-*.whl"))
+    if len(wheels) != 1:
+        raise RuntimeError(f"Expected exactly one release wheel, found {len(wheels)}")
+    wheel = wheels[0]
+    wheel_sha256 = hashlib.sha256(wheel.read_bytes()).hexdigest()
     files = [
-        "pyproject.toml",
-        "README.md",
         "data/knowledge_base.json",
         "data/eval_set.json",
         "docs/live-demo/README.md",
         "scripts/capture_live_demo.py",
     ]
-    files.extend(
-        str(path.relative_to(ROOT)) for path in sorted((ROOT / "support_assistant").glob("*.py"))
-    )
-    files.extend(
-        str(path.relative_to(ROOT))
-        for path in sorted((ROOT / "support_assistant" / "static").glob("*"))
-        if path.is_file()
-    )
     payload = io.BytesIO()
     with tarfile.open(fileobj=payload, mode="w:gz") as archive:
+        archive.add(wheel, arcname=wheel.name)
         for relative_path in files:
             archive.add(ROOT / relative_path, arcname=relative_path)
-    return payload.getvalue()
+    shutil.rmtree(release_dir)
+    return payload.getvalue(), wheel_sha256
 
 
 def main() -> None:
@@ -91,7 +110,8 @@ def main() -> None:
 
     try:
         sandbox.wait(timeout=360)
-        sandbox.write_file("/workspace/source.tar.gz", build_archive()).result(timeout=120)
+        archive, wheel_sha256 = build_archive()
+        sandbox.write_file("/workspace/release.tar.gz", archive).result(timeout=120)
         browser_install = (
             "python -m pip install --disable-pip-version-check playwright==1.55.0 && "
             if args.private_capture
@@ -99,8 +119,9 @@ def main() -> None:
         )
         install_command = (
             "mkdir -p /workspace/app && cd /workspace/app && "
-            "tar -xzf /workspace/source.tar.gz && "
-            "python -m pip install --disable-pip-version-check -e . && "
+            "tar -xzf /workspace/release.tar.gz && "
+            "python -m pip install --disable-pip-version-check "
+            "verified_support_assistant-*.whl && "
             f"{browser_install}true"
         )
         install = sandbox.exec(["bash", "-lc", install_command], timeout_seconds=300).result()
@@ -176,6 +197,7 @@ def main() -> None:
                 json.dumps(
                     {
                         "sandbox_id": sandbox.sandbox_id,
+                        "release_wheel_sha256": wheel_sha256,
                         "capture_environment": "coreweave-sandbox-private",
                         "captured_at_utc": datetime.now(UTC).isoformat(),
                         "expires_at_utc": expires_at.isoformat(),
@@ -187,11 +209,18 @@ def main() -> None:
             result.update(
                 {
                     "visibility": "private",
+                    "release_wheel_sha256": wheel_sha256,
                     "evidence_archive": str(output_dir / "verified-support-live-evidence.zip"),
                 }
             )
         else:
-            result.update({"public_url": public_url, "health_url": f"{public_url}/health"})
+            result.update(
+                {
+                    "public_url": public_url,
+                    "health_url": f"{public_url}/health",
+                    "release_wheel_sha256": wheel_sha256,
+                }
+            )
         print(json.dumps({"ready": result}, indent=2), flush=True)
     except Exception:
         sandbox.stop(missing_ok=True).result(timeout=120)

@@ -43,6 +43,27 @@ and 2,000 characters. Validation errors use FastAPI's standard HTTP 422 shape.
 A refusal is a successful HTTP 200 response with `refused: true`, a stable
 refusal message, and an empty citation list.
 
+## `POST /api/ask/stream`
+
+Accepts the same `AskRequest` body and returns `text/event-stream`. The stream
+emits deterministic progress events before the final result:
+
+```text
+event: stage
+data: {"step":"validating","message":"Checking request scope"}
+
+event: stage
+data: {"step":"retrieving","message":"Ranking versioned policies"}
+
+event: result
+data: {"request_id":"...","answer":"...","citations":[...],"refused":false,...}
+```
+
+The `result` payload is the same `AskResponse` schema as `POST /api/ask`.
+Clients must parse complete SSE frames rather than assuming one network chunk
+equals one event. Responses set `Cache-Control: no-store` and
+`X-Accel-Buffering: no`.
+
 ## Discovery
 
 ### `GET /api/meta`
@@ -52,9 +73,22 @@ The browser uses this endpoint for its live runtime indicator.
 
 ### `GET /api/policies`
 
-Returns policy IDs, titles, and source paths without duplicating full policy
-text. Human-readable policy pages are available at `/policies` and
-`/policies/{document_id}`.
+Returns policy IDs, titles, source paths, and excerpts without duplicating full
+policy text.
+
+### `GET /api/policies/{document_id}`
+
+Returns one complete policy document for the policy detail workspace, or HTTP
+404 when the stable document ID does not exist.
+
+## Evaluation
+
+### `GET /api/evaluations/latest`
+
+Runs the deterministic versioned benchmark once per process, caches the typed
+report, and returns dataset version, aggregate metrics, pass/fail counts, and
+case-level expected versus observed behavior. It does not invoke a hosted
+model in the default extractive configuration.
 
 ## Operations
 
@@ -70,6 +104,13 @@ All routes receive defensive content-type, framing, referrer, permissions, and
 Content Security Policy headers. `/api/*` responses use `Cache-Control:
 no-store`. VSA does not enable cross-origin requests by default; clients should
 use the same origin or add a narrowly reviewed CORS policy at deployment time.
+
+## Contract generation
+
+`python scripts/export_openapi.py` writes the canonical schema to
+`docs/openapi.json`. `npm --prefix web run generate:api` then regenerates the
+TypeScript declarations at `web/src/api/schema.d.ts`. The frontend build runs
+this sequence automatically so incompatible API changes fail typechecking.
 
 ## Authentication and rate limits
 

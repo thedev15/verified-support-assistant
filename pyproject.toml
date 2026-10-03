@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "verified-support-assistant"
-version = "0.2.0"
-description = "A citation-first support assistant with retrieval, safe refusal, and evaluation."
+version = "0.3.0"
+description = "A full-stack verified support studio with typed retrieval, safe refusal, and evaluation."
 requires-python = ">=3.11"
 dependencies = [
   "fastapi>=0.115,<1",
@@ -27,10 +27,11 @@ dev = [
 sandbox = ["cwsandbox[wandb]>=1.14,<1.15"]
 
 [tool.setuptools.packages.find]
-include = ["support_assistant*"]
+include = ["support_assistant*", "data*"]
 
 [tool.setuptools.package-data]
-support_assistant = ["static/*"]
+support_assistant = ["static/**/*"]
+data = ["*.json"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

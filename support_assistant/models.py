@@ -47,3 +47,61 @@ class AskResponse(BaseModel):
     finish_reason: str | None = None
     prompt_tokens: int | None = None
     completion_tokens: int | None = None
+
+
+class RuntimeLinks(BaseModel):
+    assistant: str
+    policies: str
+    evaluations: str
+    about: str
+    openapi: str
+
+
+class RuntimeMetadata(BaseModel):
+    name: str
+    version: str
+    backend: str
+    document_count: int = Field(ge=0)
+    evaluation_count: int = Field(ge=0)
+    capabilities: list[str]
+    links: RuntimeLinks
+
+
+class PolicySummary(BaseModel):
+    document_id: str
+    title: str
+    source: str
+    excerpt: str
+
+
+class PolicyDetail(PolicySummary):
+    text: str
+
+
+class EvaluationMetrics(BaseModel):
+    examples: int = Field(ge=0)
+    retrieval_accuracy: float = Field(ge=0, le=1)
+    refusal_accuracy: float = Field(ge=0, le=1)
+    keyword_coverage: float = Field(ge=0, le=1)
+
+
+class EvaluationCase(BaseModel):
+    case: int = Field(ge=1)
+    question: str
+    expected_answerable: bool
+    observed_refused: bool
+    expected_document_id: str | None
+    observed_citation_ids: list[str]
+    retrieval_correct: bool
+    refusal_correct: bool
+    keyword_coverage: float = Field(ge=0, le=1)
+    answer: str
+    passed: bool
+
+
+class EvaluationReport(BaseModel):
+    dataset_version: str
+    metrics: EvaluationMetrics
+    passed_cases: int = Field(ge=0)
+    failed_cases: int = Field(ge=0)
+    cases: list[EvaluationCase]

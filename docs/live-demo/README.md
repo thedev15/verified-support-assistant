@@ -16,7 +16,9 @@ For each of the 40 versioned cases in `data/eval_set.json`, the script:
 4. waits for the `/api/ask` response to render;
 5. captures the question, answer or refusal, verification badge, and citations;
 6. compares the observed refusal and cited document with the expected case; and
-7. records the exact API payload, screenshot hash, dimensions, and byte size.
+7. runs axe against the rendered application and rejects serious/critical issues;
+8. validates responsive overflow and minimum interactive target size; and
+9. records the exact API payload, screenshot hash, dimensions, and byte size.
 
 The capture fails unless all 40 cases are present, refusal accuracy and
 expected-document retrieval are both 100%, all screenshot hashes are unique,
@@ -39,5 +41,12 @@ python scripts/deploy_sandbox_demo.py --lifetime-minutes 90 --private-capture
 
 `verified-support-live-evidence.zip` contains the 40 PNGs, full JSON responses,
 verification summary, and this methodology. The screenshots show the complete
-0.2 interface, including the submitted question, verification state, answer or
-safe refusal, and any supporting policy sources.
+0.3 React interface, including the submitted question, verification state,
+answer or safe refusal, evidence drawer, and any supporting policy sources.
+
+The current committed archive was produced in CoreWeave Sandbox
+`e63ad8a2-72a2-44a8-a9b2-f1909d8b3ee7` on 2026-10-03. The runtime installed
+the standalone 0.3.0 wheel with SHA-256
+`f286bb5e1b3ab3c5b8aedbb422801175fbe78f6585adb635aec0d7ddf1f4dfe8`.
+It expires no later than `2026-10-03T20:20:40Z`; the archive is durable
+evidence, not a claim that the private runtime remains reachable.

@@ -22,8 +22,15 @@ jobs:
         with:
           python-version: "3.11"
           cache: pip
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: web/package-lock.json
       - name: Install
         run: python -m pip install -e ".[dev]"
+      - name: Install frontend
+        run: npm --prefix web ci
       - name: Lint
         run: ruff check . --output-format=github --show-fixes
       - name: Format check
@@ -32,3 +39,7 @@ jobs:
         run: pytest -q
       - name: Deterministic evaluation
         run: python -m support_assistant.evaluate --output reports/ci_metrics.json
+      - name: Frontend contract, types, and tests
+        run: npm --prefix web run check
+      - name: Production frontend build
+        run: npm --prefix web run build:frontend

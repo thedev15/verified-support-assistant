@@ -1,3 +1,4 @@
+import re
 import unittest
 
 try:
@@ -20,7 +21,7 @@ class ApiTests(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()["status"], "ok")
         self.assertEqual(response.json()["documents"], 12)
-        self.assertEqual(response.json()["version"], "0.2.0")
+        self.assertEqual(response.json()["version"], "0.3.0")
 
     def test_ask_returns_citations(self) -> None:
         response = self.client.post("/api/ask", json={"question": "How long is a refund?"})
@@ -38,7 +39,7 @@ class ApiTests(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         payload = response.json()
         self.assertEqual(payload["name"], "Verified Support Assistant")
-        self.assertEqual(payload["version"], "0.2.0")
+        self.assertEqual(payload["version"], "0.3.0")
         self.assertEqual(payload["document_count"], 12)
         self.assertEqual(payload["links"]["policies"], "/policies")
 
@@ -48,31 +49,35 @@ class ApiTests(unittest.TestCase):
         self.assertEqual(len(response.json()), 12)
         self.assertEqual(response.json()[0]["document_id"], "SHIP-001")
 
-    def test_human_policy_library_and_about_page(self) -> None:
+    def test_spa_routes_return_the_application_shell(self) -> None:
         policies = self.client.get("/policies")
         about = self.client.get("/about")
         self.assertEqual(policies.status_code, 200)
-        self.assertIn("Policy library", policies.text)
-        self.assertIn("/policies/REF-001", policies.text)
+        self.assertIn("Verified Support", policies.text)
         self.assertEqual(about.status_code, 200)
-        self.assertIn("How verification works", about.text)
+        self.assertIn("Verified Support", about.text)
 
     def test_frontend_assets_are_served(self) -> None:
-        stylesheet = self.client.get("/static/app.css")
-        script = self.client.get("/static/app.js")
+        index = self.client.get("/")
+        stylesheet_path = re.search(r'href="(/assets/[^"]+\.css)"', index.text)
+        script_path = re.search(r'src="(/assets/[^"]+\.js)"', index.text)
+        self.assertIsNotNone(stylesheet_path)
+        self.assertIsNotNone(script_path)
+        stylesheet = self.client.get(stylesheet_path.group(1))
+        script = self.client.get(script_path.group(1))
         self.assertEqual(stylesheet.status_code, 200)
         self.assertIn("text/css", stylesheet.headers["content-type"])
         self.assertEqual(script.status_code, 200)
-        self.assertIn("submitQuestion", script.text)
+        self.assertIn("javascript", script.headers["content-type"])
 
-    def test_citation_opens_versioned_policy(self) -> None:
-        response = self.client.get("/policies/REF-001")
+    def test_versioned_policy_api_returns_detail(self) -> None:
+        response = self.client.get("/api/policies/REF-001")
         self.assertEqual(response.status_code, 200)
-        self.assertIn("Refund processing times", response.text)
-        self.assertIn("Versioned support policy", response.text)
+        self.assertEqual(response.json()["title"], "Refund processing times")
+        self.assertIn("5 to 10 business days", response.json()["text"])
 
-    def test_unknown_policy_returns_404(self) -> None:
-        response = self.client.get("/policies/UNKNOWN")
+    def test_unknown_policy_api_returns_404(self) -> None:
+        response = self.client.get("/api/policies/UNKNOWN")
         self.assertEqual(response.status_code, 404)
 
     def test_request_validation(self) -> None:

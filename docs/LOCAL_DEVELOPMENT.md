@@ -11,6 +11,8 @@ extractive backend is deterministic and makes no paid model calls.
 | Git | current maintained release | Clone and contribute |
 | Python | 3.11 or newer | Application and tests |
 | `venv` and `pip` | bundled with Python | Isolated dependencies |
+| Node.js | 22 or newer | React development, tests, and production build |
+| npm | bundled with Node.js | Locked frontend dependencies |
 
 Recommended but optional:
 
@@ -19,9 +21,8 @@ Recommended but optional:
 - **Chromium via Playwright** only when regenerating browser evidence.
 - **CoreWeave Sandbox SDK** only when reproducing the bounded Sandbox capture.
 
-Node.js, npm, a database, and a frontend build system are not required. The
-browser application uses standards-based HTML, CSS, and JavaScript served by
-FastAPI.
+A database is not required. Node/npm are build-time tools only; the production
+React bundle is served by FastAPI and does not require a Node process.
 
 ## 1. Clone and create an environment
 
@@ -34,6 +35,8 @@ python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
 python -m pip install -e ".[dev]"
+npm --prefix web ci
+npm --prefix web run build
 ```
 
 Windows PowerShell:
@@ -45,6 +48,8 @@ py -3.11 -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install --upgrade pip
 python -m pip install -e ".[dev]"
+npm --prefix web ci
+npm --prefix web run build
 ```
 
 If `make` is available, `make setup` performs the editable installation.
@@ -94,6 +99,8 @@ python -m ruff check .
 python -m ruff format --check .
 python -m pytest -q
 python -m support_assistant.evaluate
+npm --prefix web run check
+npm --prefix web run build:frontend
 ```
 
 The deterministic evaluation must retain 100% retrieval accuracy, refusal
@@ -113,14 +120,27 @@ python -m uvicorn support_assistant.api:app --reload --host 127.0.0.1 --port 800
 
 Open:
 
-- Application: <http://127.0.0.1:8000>
+- Application: <http://127.0.0.1:8000/assistant>
 - About: <http://127.0.0.1:8000/about>
 - Policy library: <http://127.0.0.1:8000/policies>
+- Evaluations: <http://127.0.0.1:8000/evaluations>
 - OpenAPI: <http://127.0.0.1:8000/docs>
 - Health: <http://127.0.0.1:8000/health>
 
 Binding to `127.0.0.1` keeps the development server local. Use `make
 run-public` only on a trusted network and only when another device must connect.
+
+### Frontend hot reload
+
+For UI work, run FastAPI on port 8000 and Vite in a second terminal:
+
+```bash
+npm --prefix web run dev -- --host 127.0.0.1
+```
+
+Open the Vite URL (normally <http://127.0.0.1:5173>). Its development proxy
+forwards `/api`, `/health`, `/docs`, and `/openapi.json` to FastAPI. Run
+`npm --prefix web run build` before testing the integrated same-origin app.
 
 ## Docker
 
@@ -161,10 +181,17 @@ python -m pip install -e ".[dev,sandbox]"
 python scripts/deploy_sandbox_demo.py --lifetime-minutes 90 --private-capture
 ```
 
-This requires W&B-authenticated Sandbox access. The script provisions bounded
-CPU/memory, runs Chromium inside the Sandbox, copies the verified evidence ZIP
-back, and records capture provenance. It stops failed Sandboxes automatically;
-stop successful temporary Sandboxes after retrieval to avoid unnecessary use.
+This requires W&B-authenticated Sandbox access. The script builds the React
+bundle and wheel locally, provisions bounded CPU/memory, installs that exact
+wheel, runs Chromium inside the Sandbox, copies the verified evidence ZIP back,
+and records capture provenance. It stops failed Sandboxes automatically; stop
+successful temporary Sandboxes after retrieval to avoid unnecessary use.
+
+If the organization has a public-service-capable runner, omit
+`--private-capture` to request a temporary HTTPS endpoint. A
+`FAILED_PRECONDITION` about service visibility means the compatible runner pool
+supports private execution only; use private capture rather than weakening the
+verification or inventing a public URL.
 
 ## Optional Forge Inference and Weave
 
@@ -180,6 +207,10 @@ interactive use. For tracing, set `ENABLE_WEAVE=true` and an explicit
 - **Knowledge file not found** — run from the repository root or set an
   absolute `KNOWLEDGE_PATH`.
 - **Port 8000 already used** — run `make run PORT=8080`.
+- **Frontend looks stale** — run `npm --prefix web run build`; FastAPI serves
+  `support_assistant/static`, not `web/src`.
+- **Generated API types are stale** — run `npm --prefix web run generate:api`
+  and commit both `docs/openapi.json` and `web/src/api/schema.d.ts`.
 - **Browser capture cannot launch** — run `python -m playwright install
   chromium`; Linux may require Playwright's documented system dependencies.
 - **Inference authentication fails** — verify W&B login, entity/project access,

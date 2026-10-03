@@ -1,6 +1,7 @@
 {
-  "sandbox_id": "f9226246-b4ea-4f4b-b943-2c66af5e3a01",
+  "sandbox_id": "e63ad8a2-72a2-44a8-a9b2-f1909d8b3ee7",
+  "release_wheel_sha256": "f286bb5e1b3ab3c5b8aedbb422801175fbe78f6585adb635aec0d7ddf1f4dfe8",
   "capture_environment": "coreweave-sandbox-private",
-  "captured_at_utc": "2026-10-03T05:33:19.695652+00:00",
-  "expires_at_utc": "2026-10-03T07:01:23.949668+00:00"
+  "captured_at_utc": "2026-10-03T18:22:41.545761+00:00",
+  "expires_at_utc": "2026-10-03T20:20:40.118398+00:00"
 }

@@ -4,10 +4,17 @@ import os
 from dataclasses import dataclass
 from pathlib import Path
 
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+
 
 @dataclass(frozen=True)
 class Settings:
-    knowledge_path: Path = Path(os.getenv("KNOWLEDGE_PATH", "data/knowledge_base.json"))
+    knowledge_path: Path = Path(
+        os.getenv("KNOWLEDGE_PATH", str(PROJECT_ROOT / "data" / "knowledge_base.json"))
+    )
+    evaluation_path: Path = Path(
+        os.getenv("EVALUATION_PATH", str(PROJECT_ROOT / "data" / "eval_set.json"))
+    )
     top_k: int = int(os.getenv("TOP_K", "3"))
     min_retrieval_score: float = float(os.getenv("MIN_RETRIEVAL_SCORE", "0.12"))
     llm_backend: str = os.getenv("LLM_BACKEND", "extractive")

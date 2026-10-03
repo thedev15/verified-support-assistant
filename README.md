@@ -7,10 +7,10 @@ relevant policy excerpts, refuses requests it cannot verify or perform, and can
 generate answers with either a deterministic no-cost baseline or CoreWeave
 Forge Serverless Inference.
 
-> **Status:** VSA 0.2 includes the verified API and responsive browser app,
-> policy/About discovery, deterministic and hosted-model backends, security
-> headers, local and container tooling, evaluation gates, Weave observability,
-> and reproducible private-Sandbox browser evidence.
+> **Status:** VSA 0.3 is a full-stack React 19 + FastAPI application with a
+> typed OpenAPI contract, streaming verification progress, policy and
+> evaluation workspaces, local conversation history, optional hosted-model
+> generation, and reproducible CoreWeave Sandbox browser evidence.
 
 ## Why this project exists
 
@@ -33,7 +33,8 @@ and account-action cases, 2026-10-02) with the current deterministic gate:
 | Retrieval accuracy (expected policy in top 3) | 100% |
 | Refusal accuracy | 100% |
 | Required-keyword coverage | 100% |
-| Unit and API tests | 33/33 passing |
+| Python unit and API tests | 33/33 passing |
+| React component/accessibility tests | 5/5 passing |
 
 These results validate the synthetic benchmark only. They are not a
 production-quality claim; the next milestone evaluates generated answers with
@@ -58,8 +59,9 @@ python scripts/capture_live_demo.py --base-url http://localhost:8000
 ```
 
 The capture fails unless refusal accuracy and cited-document accuracy are both
-100%, all 40 PNGs are present and unique, and the evidence ZIP passes its CRC
-check. The committed set was captured in a private, bounded CoreWeave Sandbox;
+100%, all 40 PNGs are present and unique, axe finds no serious/critical
+accessibility violations, and the evidence ZIP passes its CRC check. The
+committed set was captured in a private, bounded CoreWeave Sandbox;
 [`sandbox-capture.json`](docs/live-demo/sandbox-capture.json) records its ID and
 hard expiry. This verifies the deployed runtime but is not a claim of durable
 or publicly available production deployment.
@@ -101,7 +103,8 @@ refusals and exposes `finish_reason` for observability.
 
 ```mermaid
 flowchart LR
-    U[Browser or API client] --> A[FastAPI /api/ask]
+    U[React 19 + TypeScript browser app] --> Q[TanStack Query + typed API client]
+    Q --> A[FastAPI API and SSE stream]
     A --> G[Scope and account-access guardrails]
     G --> R[TF-IDF retrieval]
     R --> K[(Versioned policy corpus)]
@@ -117,11 +120,13 @@ flowchart LR
 
 ## Features
 
-- FastAPI backend with versioned OpenAPI, runtime metadata, policy discovery,
+- React 19, TypeScript, Vite, React Router, and TanStack Query frontend
+- OpenAPI-generated API types; frontend/backend schema drift fails the build
+- FastAPI backend with SSE verification progress, policy/evaluation APIs,
   request IDs, latency, startup validation, and defensive browser headers
-- Accessible responsive interface with dark/light themes, example prompts,
-  keyboard submission, copy/reset actions, safe errors, and live runtime status
-- Dedicated About, policy-library, and human-readable policy pages
+- Responsive support studio with desktop rail/mobile tabs, dark/light themes,
+  conversation timeline, evidence drawer, local history, export, and copy/reset
+- Dedicated About, policy library/detail, and interactive evaluation pages
 - Inspectable TF-IDF retrieval baseline
 - Twelve synthetic policy documents spanning shipping, returns, refunds,
   payments, warranties, security, international orders, and gift cards
@@ -137,7 +142,7 @@ flowchart LR
 
 ## Quick start
 
-Prerequisites: Python 3.11+.
+Prerequisites: Python 3.11+ and Node.js 22+.
 
 ```bash
 git clone https://github.com/thedev15/verified-support-assistant.git
@@ -145,15 +150,16 @@ cd verified-support-assistant
 python -m venv .venv
 source .venv/bin/activate       # Windows: .venv\Scripts\activate
 python -m pip install -e ".[dev]"
+npm --prefix web ci
+npm --prefix web run build
 cp .env.example .env
-make test
-make evaluate
+make check
 make run
 ```
 
-Open <http://localhost:8000>. API documentation is available at
-<http://localhost:8000/docs>; the About and policy-library pages are at
-<http://localhost:8000/about> and <http://localhost:8000/policies>.
+Open <http://localhost:8000/assistant>. The production build is served by
+FastAPI at the same origin. API documentation is at <http://localhost:8000/docs>;
+policies, evaluations, and architecture notes are linked from the app.
 
 The default `LLM_BACKEND=extractive` mode makes no paid model calls.
 For Windows PowerShell, Docker, environment loading, browser capture, optional
@@ -165,6 +171,8 @@ Inference/Weave setup, and troubleshooting, see the
 - [Local development and required tools](docs/LOCAL_DEVELOPMENT.md)
 - [Architecture and design decisions](docs/ARCHITECTURE.md)
 - [API contract and security headers](docs/API.md)
+- [Operations, packaging, deployment, and rollback](docs/OPERATIONS.md)
+- [Release changelog](CHANGELOG.md)
 - [Contributing](CONTRIBUTING.md)
 - [Security policy](SECURITY.md)
 - [Verified browser evidence](docs/live-demo/README.md)
@@ -259,7 +267,10 @@ support_assistant/
   retrieval.py      TF-IDF ranking
   service.py        Guardrails, thresholding, citations, orchestration
   evaluate.py       Deterministic benchmark runner
-  static/           HTML, CSS, and JavaScript browser application
+  static/           Generated React production bundle (committed release asset)
+web/
+  src/              React 19 + TypeScript source, components, routes, tests
+  package.json      Vite build, Vitest, type generation, and checks
 data/
   knowledge_base.json
   eval_set.json
@@ -293,6 +304,8 @@ tests/
 - [x] Weave traces and W&B evaluation report
 - [x] Bounded CoreWeave Sandbox capture and verified browser evidence
 - [x] Modern responsive UI, About/policy discovery, and complete local docs
+- [x] React/TypeScript studio, generated API types, SSE progress, and eval UI
+- [x] 40-case CoreWeave Sandbox browser and accessibility verification
 
 ## License
 

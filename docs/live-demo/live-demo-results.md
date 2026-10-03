@@ -1,6 +1,6 @@
 # Verified Support Assistant — live UI evidence
 
-Every record below was submitted through the deployed browser interface to `/api/ask`.
+Every record below was submitted through the production React interface to `/api/ask/stream`.
 The screenshots show the real question, rendered answer or refusal, verification badge,
 and policy citations. No response text was injected by the capture script.
 

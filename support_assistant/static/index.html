@@ -1,109 +1,15 @@
 <!doctype html>
 <html lang="en" data-theme="dark">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Citation-first support answers backed by versioned policies and safe refusal.">
-  <meta name="theme-color" content="#08111f">
-  <title>Verified Support Assistant</title>
-  <link rel="stylesheet" href="/static/app.css">
-  <script src="/static/app.js" defer></script>
-</head>
-<body>
-<a class="skip-link" href="#content">Skip to assistant</a>
-<main id="content" class="site-shell">
-  <header class="topbar">
-    <a class="brand" href="/" aria-label="Verified Support home">
-      <span class="brand-mark" aria-hidden="true">✓</span>
-      <span>Verified Support <small>Assistant</small></span>
-    </a>
-    <nav class="nav-links" aria-label="Primary navigation">
-      <a aria-current="page" href="/">Ask</a>
-      <a href="/policies">Policies</a>
-      <a href="/about">About</a>
-      <a href="/docs">API</a>
-      <button id="theme-toggle" class="icon-button" type="button" aria-label="Use light theme" title="Change color theme">◐</button>
-    </nav>
-  </header>
-
-  <div class="runtime-strip" role="status">
-    <span class="live-dot" aria-hidden="true"></span>
-    <span id="runtime-status">Connecting to policy service…</span>
-  </div>
-
-  <div class="app-shell">
-    <section class="assistant-card" aria-labelledby="page-title">
-      <p class="eyebrow">Citation-first customer support</p>
-      <h1 id="page-title">Answers you can verify,<br><span>not just trust.</span></h1>
-      <p class="lede">Ask about shipping, returns, refunds, warranties, payments, gift cards, or account security. Supported answers disclose the exact policy used; unsupported requests are refused.</p>
-
-      <div class="examples" aria-label="Example questions">
-        <span>Try an example</span>
-        <button class="example-chip" type="button">How long does a card refund take?</button>
-        <button class="example-chip" type="button">Can I change my shipping address?</button>
-        <button class="example-chip" type="button">Should I share my one-time code?</button>
-      </div>
-
-      <form id="question-form">
-        <div class="field-heading">
-          <label for="question">Your support question</label>
-          <span id="character-count" aria-live="polite">38 / 2,000</span>
-        </div>
-        <textarea id="question" name="question" required minlength="3" maxlength="2000" aria-describedby="scope-note keyboard-note">How long does a card refund take?</textarea>
-        <div class="form-bottom">
-          <div>
-            <span id="scope-note" class="scope">No account access · No transactions · Policy answers only</span>
-            <span id="keyboard-note" class="keyboard-note">Ctrl/⌘ + Enter to verify</span>
-          </div>
-          <button id="ask" class="primary-button" type="submit"><span>Verify answer</span><b aria-hidden="true">→</b></button>
-        </div>
-      </form>
-
-      <section id="response" class="response" aria-live="polite" aria-atomic="false" hidden>
-        <div class="response-head">
-          <span id="status" class="status checking">● Checking policies</span>
-          <span id="response-meta" class="response-meta"></span>
-        </div>
-        <p id="answer"></p>
-        <div id="response-actions" class="response-actions" hidden>
-          <button id="copy-answer" class="secondary-button" type="button">Copy answer</button>
-          <button id="ask-another" class="secondary-button" type="button">Ask another</button>
-        </div>
-        <div id="citation-section" hidden>
-          <div class="section-heading">
-            <p class="citations-title">Verified policy sources</p>
-            <a href="/policies">Browse all policies</a>
-          </div>
-          <div id="citations"></div>
-        </div>
-      </section>
-    </section>
-
-    <aside class="verification-panel" aria-label="Verification approach">
-      <div class="panel-head">
-        <div class="shield" aria-hidden="true">◆</div>
-        <p class="eyebrow">Trust architecture</p>
-        <h2>Verification built in</h2>
-        <p>The assistant answers only when the versioned policy corpus provides sufficient evidence.</p>
-      </div>
-      <div class="checks">
-        <div class="check"><b>1</b><div><strong>Evidence retrieved</strong><span>Transparent TF-IDF search ranks relevant policy documents.</span></div></div>
-        <div class="check"><b>2</b><div><strong>Scope checked</strong><span>Account actions, secrets, unsafe requests, and weak evidence are refused.</span></div></div>
-        <div class="check"><b>3</b><div><strong>Sources disclosed</strong><span>Every supported answer links to the policy it actually cites.</span></div></div>
-      </div>
-      <div class="panel-links">
-        <a href="/about">How it works <span aria-hidden="true">→</span></a>
-        <a href="/policies">Policy library <span aria-hidden="true">→</span></a>
-      </div>
-      <p class="policy-note"><strong>Safe default:</strong> if evidence is weak or a request needs private access, VSA refuses instead of guessing.</p>
-    </aside>
-  </div>
-
-  <footer class="site-footer">
-    <span>Verified Support Assistant · Synthetic demonstration policies</span>
-    <span><a href="/about">Limitations</a> · <a href="/docs">OpenAPI</a></span>
-  </footer>
-</main>
-<noscript><p class="noscript">JavaScript is required for the interactive assistant. The <a href="/policies">policy library</a> and <a href="/docs">API documentation</a> remain available.</p></noscript>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Verified, citation-first support answers backed by versioned policies." />
+    <meta name="theme-color" content="#07111f" />
+    <title>Verified Support Studio</title>
+    <script type="module" crossorigin src="/assets/index-Ei6GbI4Z.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-BAp2q03M.css">
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
 </html>
